@@ -1,0 +1,215 @@
+/* ═══════════════════════════════════════════════════════════
+   PLANIMETRIA DEL LOCALE — tavoli-staff.component.css
+═══════════════════════════════════════════════════════════ */
+
+.mappa-locale {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.mappa-locale h3 {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #222;
+  border-bottom: 3px solid #f6d365;
+  padding-bottom: 10px;
+  display: inline-block;
+}
+
+/* ─── LEGENDA ──────────────────────────────────────────── */
+.mappa-legenda {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 18px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.dot.cap-4 {
+  background: #2e7d32;
+}
+
+.dot.cap-6 {
+  background: #1565c0;
+}
+
+.dot.cap-10 {
+  background: #6a1b9a;
+}
+
+.dot.occupato {
+  background: #ddd;
+}
+
+/* ─── CONTENITORE PLANIMETRIA ──────────────────────────── */
+.floor-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.03) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,0.03) 40px),
+    #faf9f5;
+  border: 3px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+
+  /* CSS Grid per posizionare i tavoli */
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  grid-template-areas:
+    ".  .  .  .  .  .  .  .  .  .  .  .  .  ."
+    ".  t1 t1 .  .  t5 t5 t5 .  .  .  t8 t8 ."
+    ".  t1 t1 .  .  t5 t5 t5 .  .  .  t8 t8 ."
+    ".  .  .  .  .  .  .  .  .  .  .  t8 t8 ."
+    ".  t2 t2 .  .  t6 t6 t6 .  .  .  .  .  ."
+    ".  t2 t2 .  .  t6 t6 t6 .  .  .  t9 t9 ."
+    ".  .  .  .  .  .  .  .  .  .  .  t9 t9 ."
+    ".  t3 t3 .  t4 t4 .  t7 t7 t7 .  t9 t9 ."
+    ".  t3 t3 .  t4 t4 .  t7 t7 t7 .  .  .  ."
+    ".  .  .  .  .  .  .  .  .  .  .  .  .  .";
+  gap: 0;
+  padding: 8px;
+}
+
+/* ─── ETICHETTE PARETI ─────────────────────────────────── */
+.wall-label {
+  position: absolute;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #999;
+  z-index: 5;
+}
+
+.wall-label.entrata {
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #faf9f5;
+  padding: 2px 12px;
+  border-radius: 4px 4px 0 0;
+}
+
+.wall-label.cucina {
+  top: 8px;
+  right: 12px;
+}
+
+.wall-label.cassa {
+  top: 8px;
+  left: 12px;
+  background: #d4a017;
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 4px;
+}
+
+/* ─── SINGOLO TAVOLO ───────────────────────────────────── */
+.tavolo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 3px;
+  background: linear-gradient(135deg, #fef9e7, #fdf2c5);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  transition: opacity 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+  z-index: 2;
+  margin: 3px;
+}
+
+.tavolo:hover {
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+/* Tavolo da 4 — quadrato */
+.tavolo.t4 {
+  border-radius: 6px;
+  border-color: #2e7d32;
+}
+
+/* Tavolo da 6 — rettangolo orizzontale */
+.tavolo.t6 {
+  border-radius: 8px;
+  border-color: #1565c0;
+}
+
+/* Tavolo da 10 — rettangolo grande */
+.tavolo.t10 {
+  border-radius: 10px;
+  border-color: #6a1b9a;
+}
+
+/* ─── STATO OCCUPATO — trasparente ─────────────────────── */
+.tavolo.occupato {
+  opacity: 0.35;
+  border-color: #aaa !important;
+  background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+  box-shadow: none;
+}
+
+.tavolo.occupato .t-num {
+  color: #999;
+}
+
+/* ─── TESTI ────────────────────────────────────────────── */
+.t-num {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #333;
+  line-height: 1;
+}
+
+/* ─── RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .floor-container {
+    aspect-ratio: 10 / 12;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(16, 1fr);
+    grid-template-areas:
+      ".    .    .    .    .    ."
+      ".    t1   t1   .    t2   t2"
+      ".    t1   t1   .    t2   t2"
+      ".    .    .    .    .    ."
+      ".    t5   t5   t5   .    ."
+      ".    t6   t6   t6   .    ."
+      ".    t7   t7   t7   .    ."
+      ".    .    .    .    .    ."
+      ".    t8   t8   t8   .    ."
+      ".    t8   t8   t8   .    ."
+      ".    t9   t9   t9   .    ."
+      ".    t9   t9   t9   .    ."
+      ".    .    .    .    .    ."
+      ".    t3   t3   .    t4   t4"
+      ".    .    .    .    .    ."
+      ".    .    .    .    .    .";
+  }
+}

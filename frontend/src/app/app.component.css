@@ -1,0 +1,584 @@
+/* ═══════════════════════════════════════════════════════════
+   THE CAVE PUB — app.component.css
+   Bright / Yellow / Totem Kiosk Style
+═══════════════════════════════════════════════════════════ */
+
+:host {
+  --yellow: #ffcc00;
+  --yellow-hover: #e6b800;
+  --yellow-light: #fff5cc;
+  --dark: #121212;
+  --dark-soft: #2a2a2a;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-400: #ced4da;
+  --gray-500: #adb5bd;
+  --gray-600: #6c757d;
+  --gray-700: #495057;
+  --red: #dc3545;
+  --red-light: #fbeee8;
+  --green: #28a745;
+  --green-light: #e6f6ea;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 30px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 50px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Montserrat', 'Inter', sans-serif;
+}
+
+.app-shell {
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--dark);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ─── HERO (landing page) ─────────────────────────────────── */
+.login-hero {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-image {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  filter: brightness(0.45);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.3) 0%,
+    rgba(0,0,0,0.15) 40%,
+    rgba(0,0,0,0.5) 100%
+  );
+}
+
+.login-hero h1 {
+  position: absolute;
+  top: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 900;
+  color: var(--white);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  z-index: 2;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.login-hero h1::after {
+  content: "Est. 2023";
+  display: block;
+  font-family: var(--font);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--yellow);
+  text-align: center;
+  margin-top: 0.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* ─── OVERLAYS ────────────────────────────────────────────── */
+.login-overlay {
+  position: relative;
+  z-index: 2;
+}
+
+/* ─── ACCESS WRAPPER ──────────────────────────────────────── */
+.access-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.access-intro {
+  max-width: 440px;
+  text-align: center;
+}
+
+.access-kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  font-weight: 700;
+}
+
+.access-tagline {
+  margin-top: 0.4rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  color: var(--white);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ─── CARDS ───────────────────────────────────────────────── */
+.access-card {
+  width: min(520px, 92vw);
+  padding: 2rem 2rem;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 1rem;
+  text-align: center;
+}
+
+.access-card h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin: 0;
+}
+
+/* ─── INPUTS ──────────────────────────────────────────────── */
+.access-actions {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.access-card.access-choice .access-actions {
+  justify-items: center;
+}
+
+.access-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: var(--gray-100);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--dark);
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.access-input::placeholder {
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+.access-input:focus {
+  border-color: var(--yellow);
+  background: var(--white);
+}
+
+.access-input option {
+  background: var(--white);
+  color: var(--dark);
+}
+
+/* ─── BUTTONS ─────────────────────────────────────────────── */
+.access-actions button,
+.access-selected button {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 1.1rem 2rem;
+  background: var(--yellow);
+  color: var(--dark);
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 14px rgba(255, 204, 0, 0.3);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.access-actions button:hover,
+.access-selected button:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
+}
+
+.access-actions button:active,
+.access-selected button:active {
+  transform: translateY(0);
+}
+
+/* Ghost / secondary */
+.access-actions button.secondary,
+.access-selected button.secondary {
+  background: transparent;
+  border: 2px solid var(--gray-300);
+  color: var(--gray-700);
+  font-size: 0.88rem;
+  padding: 0.7rem 1.2rem;
+  box-shadow: none;
+  width: auto;
+}
+
+.access-actions button.secondary:hover,
+.access-selected button.secondary:hover {
+  border-color: var(--dark);
+  color: var(--dark);
+  background: var(--gray-100);
+  transform: translateY(-1px);
+}
+
+/* ─── SELECTED BAR ────────────────────────────────────────── */
+.access-selected {
+  width: min(420px, 92vw);
+  background: rgba(255,255,255,0.95);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  box-shadow: var(--shadow);
+}
+
+.access-selected strong {
+  color: var(--dark);
+  font-weight: 700;
+}
+
+/* ─── LOGIN SECTION (sub-fields) ──────────────────────────── */
+.login-section {
+  display: grid;
+  gap: 0.7rem;
+  padding-top: 0.6rem;
+  border-top: 2px solid var(--gray-200);
+  margin-top: 0.2rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD (after login)
+═══════════════════════════════════════════════════════════ */
+.dashboard {
+  min-height: 100vh;
+  background: var(--gray-100);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── NAVBAR ──────────────────────────────────────────────── */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
+  background: var(--yellow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.dash-logo {
+  font-family: var(--font);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--dark);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.dash-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.dash-role,
+.dash-user {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dark);
+  padding: 0.25rem 0.7rem;
+  background: rgba(0,0,0,0.08);
+  border-radius: var(--radius-pill);
+}
+
+.dash-logout {
+  border: 2px solid var(--dark);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dash-logout:hover {
+  background: var(--dark);
+  color: var(--yellow);
+}
+
+/* ─── CONTENT ─────────────────────────────────────────────── */
+.dash-content {
+  flex: 1;
+  padding: 1.5rem 2rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* ─── IL MIO CONTO / PAGAMENTO ──────────────────────────────── */
+.btn-conto {
+  background: var(--dark);
+  color: var(--yellow);
+  border: none;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: transform 0.15s, background 0.2s;
+}
+
+.btn-conto:hover {
+  transform: translateY(-1px);
+  background: #000;
+}
+
+.btn-conto.torna-menu {
+  background: var(--yellow-light);
+  color: var(--dark);
+  border: 2px solid var(--yellow);
+  padding: 0.6rem 1.2rem;
+}
+
+.btn-conto.torna-menu:hover {
+  background: var(--yellow);
+  transform: translateY(-1px);
+}
+
+.conto-card {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.conto-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--gray-600);
+}
+
+.ordini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.ordine-box {
+  background: var(--yellow-light);
+  border: 1px solid var(--yellow);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+.ordine-box h4 {
+  margin: 0 0 0.8rem;
+  font-weight: 800;
+  color: var(--dark);
+  font-size: 1.05rem;
+  border-bottom: 1px solid rgba(255, 204, 0, 0.5);
+  padding-bottom: 0.3rem;
+}
+
+.ordine-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.conto-item-riga {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.conto-note {
+  font-size: 0.8rem;
+  color: var(--gray-700);
+  margin-top: 0.1rem;
+  font-style: italic;
+}
+
+.conto-totale {
+  text-align: right;
+  border-top: 2px solid var(--gray-200);
+  padding-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.conto-totale h3 {
+  font-size: 1.4rem;
+  color: var(--dark);
+  margin: 0;
+  font-weight: 800;
+}
+
+.btn-paga {
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+}
+
+/* ─── RICEVUTA E CODICE A BARRE ────────────────────────────── */
+.ricevuta {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+}
+
+.ricevuta-header h3 {
+  color: var(--green);
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.barcode-container {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.barcode-lines {
+  display: flex;
+  height: 80px;
+  gap: 2px;
+  margin-bottom: 0.5rem;
+  justify-content: center;
+}
+
+.barcode-lines .bar {
+  background: var(--dark);
+  height: 100%;
+}
+
+.bar.w1 { width: 2px; }
+.bar.w2 { width: 4px; }
+.bar.w3 { width: 6px; }
+
+.barcode-text {
+  font-family: monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.btn-esci {
+  margin-top: 1rem;
+}
+
+/* ─── ACCORDION STAFF ─────────────────────────────────────── */
+.staff-accordion {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+}
+
+.staff-accordion summary {
+  padding: 1.2rem 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--dark);
+  cursor: pointer;
+  background: var(--gray-100);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.staff-accordion summary:hover {
+  background: var(--gray-200);
+}
+
+.staff-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.staff-accordion summary::after {
+  content: '▼';
+  font-size: 0.9rem;
+  color: var(--gray-500);
+  transition: transform 0.3s ease;
+}
+
+.staff-accordion[open] summary {
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.staff-accordion[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.accordion-content {
+  padding: 1.5rem;
+  background: var(--white);
+}
+
+/* ─── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-content { padding: 1rem 1rem 2rem; }
+  .dash-header { padding: 0 1rem; }
+}
+
+@media (max-width: 480px) {
+  .access-card { padding: 1.5rem 1.2rem; }
+  .dash-logo { font-size: 0.95rem; }
+}

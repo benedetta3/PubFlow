@@ -1,0 +1,43 @@
+<section class="menu-card">
+  <div class="menu-header">
+    <h2>Gestione Menu</h2>
+    <div class="header-actions">
+      <button type="button" class="primary" (click)="loadMenu()" [disabled]="loading">
+        {{ loading ? 'Caricamento...' : 'Ricarica' }}
+      </button>
+    </div>
+  </div>
+
+  <p class="menu-hint">Visualizza e modifica le quantità di magazzino in tempo reale.</p>
+
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <p *ngIf="!loading && !errorMessage && items.length === 0" class="menu-empty">
+    Nessun elemento disponibile. Premi "Ricarica".
+  </p>
+
+  <div class="menu-grid" *ngIf="items.length > 0">
+    <section class="menu-section" *ngFor="let gruppo of menuRaggruppato">
+      <h4 class="menu-section-title">{{ gruppo.categoria }}</h4>
+      <article class="menu-item-wrapper" *ngFor="let item of gruppo.items">
+        <div class="menu-item-main">
+          <div class="menu-item-info">
+            <h4>{{ item.nome }}</h4>
+            <p class="desc">{{ item.descrizione }}</p>
+          </div>
+          <div class="staff-actions">
+            <div class="price">€ {{ item.prezzo | number : '1.2-2' }}</div>
+            <div class="stock-controls">
+              <span class="stock-label" [class.empty]="!item.disponibile || item.quantitaDisponibile === 0">
+                {{ (!item.disponibile || item.quantitaDisponibile === 0) ? 'ESAURITO' : 'Disp: ' + item.quantitaDisponibile }}
+              </span>
+              <div class="btn-group">
+                <button type="button" class="btn-minus" (click)="reduceAvailability(item)">-</button>
+                <button type="button" class="btn-plus" (click)="addAvailability(item)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</section>

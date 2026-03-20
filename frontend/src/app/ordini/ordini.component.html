@@ -1,0 +1,41 @@
+<section class="card">
+  <div class="card-header">
+    <h2>Ordini</h2>
+    <button type="button" (click)="loadOrdini()" [disabled]="loading">
+      {{ loading ? 'Caricamento...' : 'Carica ordini' }}
+    </button>
+  </div>
+
+  <p class="hint">Recupera i dati da <code>/pubflow/ordini</code>.</p>
+
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <p *ngIf="!loading && !errorMessage && ordiniFiltrati.length === 0" class="empty">
+    Nessun ordine disponibile. Premi "Carica ordini".
+  </p>
+
+  <div class="order-list" *ngIf="ordiniFiltrati.length > 0">
+    <article class="order" *ngFor="let ordine of ordiniFiltrati">
+      <div class="order-main">
+        <div>
+          <h3>Ordine #{{ ordine.numeroOrdine }}</h3>
+          <p class="meta">
+            <span>{{ ordine.tipoOrdine }}</span>
+            <span>•</span>
+            <span>{{ ordine.stato }}</span>
+          </p>
+          <p class="meta" *ngIf="ordine.telefonoCliente">Cliente: {{ ordine.telefonoCliente }}</p>
+          <p class="meta" *ngIf="ordine.numeroTavolo">Tavolo: {{ ordine.numeroTavolo }}</p>
+          <p class="meta" *ngIf="ordine.indirizzoConsegna">Consegna: {{ ordine.indirizzoConsegna }}</p>
+        </div>
+        <div class="total">€ {{ ordine.totale | number : '1.2-2' }}</div>
+      </div>
+
+      <ul class="items" *ngIf="ordine.items?.length">
+        <li *ngFor="let item of ordine.items">
+          <span>{{ item.menuItemNome || 'Voce menu #' + item.menuItemId }}</span>
+          <span>x{{ item.quantita }}</span>
+        </li>
+      </ul>
+    </article>
+  </div>
+</section>

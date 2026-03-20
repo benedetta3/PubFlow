@@ -1,0 +1,27 @@
+<section class="card">
+  <div class="card-header">
+    <h2>Prenotazioni</h2>
+    <button type="button" (click)="loadPrenotazioni()" [disabled]="loading">
+      {{ loading ? 'Caricamento...' : 'Carica prenotazioni' }}
+    </button>
+  </div>
+
+  <p class="hint">Recupera i dati da <code>/pubflow/prenotazioni</code>.</p>
+
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <p *ngIf="!loading && !errorMessage && prenotazioniFiltrate.length === 0" class="empty">
+    Nessuna prenotazione disponibile. Premi "Carica prenotazioni".
+  </p>
+
+  <div class="prenotazioni" *ngIf="prenotazioniFiltrate.length > 0">
+    <article class="prenotazione" *ngFor="let prenotazione of prenotazioniFiltrate">
+      <div>
+        <h3>Prenotazione #{{ prenotazione.numeroPrenotazione }}</h3>
+        <p class="meta">{{ prenotazione.nomeCliente }} • {{ prenotazione.numeroPersone }} persone</p>
+        <p class="meta">{{ prenotazione.data }} • {{ prenotazione.ora }}</p>
+        <p class="meta" *ngIf="prenotazione.telefonoCliente">Tel: {{ prenotazione.telefonoCliente }}</p>
+      </div>
+      <span class="badge">{{ prenotazione.stato }}</span>
+    </article>
+  </div>
+</section>

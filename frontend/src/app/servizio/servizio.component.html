@@ -1,0 +1,189 @@
+<section class="card">
+  <div class="card-header">
+    <h2>Accesso al servizio</h2>
+  </div>
+
+  <p class="hint">Inserisci i dati iniziali e scegli il servizio.</p>
+
+  <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="form" *ngIf="step === 'dati'">
+    <label>
+      Nome
+      <input type="text" [(ngModel)]="nome" placeholder="Mario" />
+    </label>
+    <label>
+      Cognome
+      <input type="text" [(ngModel)]="cognome" placeholder="Rossi" />
+    </label>
+    <label>
+      Tipo servizio
+      <select [(ngModel)]="tipo">
+        <option value="">Seleziona...</option>
+        <option value="TAVOLO">Ordine al tavolo</option>
+        <option value="PRENOTAZIONE">Prenotazione tavolo</option>
+        <option value="ASPORTO">Asporto</option>
+        <option value="DOMICILIO">Domicilio</option>
+      </select>
+    </label>
+
+    <div class="section" *ngIf="tipo === 'TAVOLO'">
+      <label>
+        Numero tavolo
+        <input type="number" [(ngModel)]="numeroTavolo" min="1" />
+      </label>
+    </div>
+
+    <div class="section" *ngIf="tipo === 'PRENOTAZIONE'">
+      <label>
+        Numero persone
+        <input type="number" [(ngModel)]="prenotazionePersone" min="1" />
+      </label>
+      <label>
+        Telefono
+        <input type="text" [(ngModel)]="telefono" placeholder="3331234567" />
+      </label>
+      <label>
+        Data
+        <input type="date" [(ngModel)]="prenotazioneData" />
+      </label>
+      <label>
+        Ora
+        <input type="time" [(ngModel)]="prenotazioneOra" />
+      </label>
+      <div class="availability" *ngIf="prenotazioneOra">
+        Disponibilità: <strong>{{ verificaDisponibilita() }}</strong>
+      </div>
+      <button type="button" (click)="confermaPrenotazione()" class="primary">
+        Conferma prenotazione
+      </button>
+    </div>
+
+    <div class="section" *ngIf="tipo === 'DOMICILIO'">
+      <label>
+        Telefono
+        <input type="text" [(ngModel)]="telefono" placeholder="3331234567" />
+      </label>
+      <label>
+        Indirizzo
+        <input type="text" [(ngModel)]="indirizzo" placeholder="Via Roma 10" />
+      </label>
+      <label>
+        Comune (solo Rende)
+        <input type="text" [(ngModel)]="comune" placeholder="Rende" />
+      </label>
+      <label>
+        Provincia (CS)
+        <input type="text" [(ngModel)]="provincia" placeholder="CS" />
+      </label>
+    </div>
+
+    <button type="button" class="primary" (click)="avvia()" *ngIf="tipo !== 'PRENOTAZIONE'">
+      Procedi al menu
+    </button>
+  </div>
+
+  <!-- ═══ MENU ═══ -->
+  <div *ngIf="step === 'menu'">
+    <div class="menu-header">
+      <div>
+        <h3>Menu</h3>
+        <p class="hint">Seleziona gli articoli e aggiungili al carrello.</p>
+      </div>
+      <button
+        type="button"
+        class="cart-toggle"
+        (click)="toggleCarrello()"
+        aria-label="Carrello"
+        *ngIf="carrello.length > 0"
+      >
+        <span class="cart-icon">Carrello</span>
+        <span class="cart-badge">{{ carrello.length }}</span>
+      </button>
+    </div>
+    <p *ngIf="menuLoading">Caricamento menu...</p>
+
+    <!-- CARRELLO -->
+    <aside class="cart" *ngIf="carrelloAperto && carrello.length > 0">
+      <div class="cart-header">
+        <h4>Carrello</h4>
+        <span>{{ carrello.length }} articoli</span>
+      </div>
+      <ul class="cart-items-list">
+        <li *ngFor="let c of carrello" class="cart-item">
+          <div class="cart-item-header">
+            <span class="cart-item-name">{{ c.item.nome }}</span>
+            <span class="cart-price">€ {{ c.item.prezzo | number:'1.2-2' }}</span>
+          </div>
+          <!-- Mostriamo solo il riepilogo delle rimozioni -->
+          <div class="cart-note" *ngIf="getNotaIngredienti(c)">{{ getNotaIngredienti(c) }}</div>
+        </li>
+      </ul>
+
+      <div class="total">Totale: € {{ totale() | number : '1.2-2' }}</div>
+      <button type="button" class="primary" (click)="inviaInCucina()">Invia ordine in cucina</button>
+    </aside>
+
+    <!-- LISTA MENU -->
+    <div class="menu-grid" *ngIf="!menuLoading">
+      <section class="menu-section" *ngFor="let gruppo of menuRaggruppato; trackBy: trackByCategoria">
+        <h4 class="menu-section-title">{{ gruppo.categoria }}</h4>
+        <article class="menu-item-wrapper" *ngFor="let item of gruppo.items; trackBy: trackByItem">
+          <div class="menu-item-main">
+            <div class="menu-item-info">
+              <h4>{{ item.nome }}</h4>
+              <p class="desc">{{ item.descrizione }}</p>
+            </div>
+            <div class="actions" *ngIf="isDisponibile(item)">
+              <span>€ {{ item.prezzo | number : '1.2-2' }}</span>
+              <span class="qty">x{{ quantitaSelezionata(item) }}</span>
+              <button type="button" (click)="aggiungi(item)">+</button>
+              <button type="button" class="secondary" (click)="rimuovi(item)">-</button>
+            </div>
+            <div class="actions" *ngIf="!isDisponibile(item)">
+              <span class="sold-out">Esaurito</span>
+            </div>
+          </div>
+          
+          <!-- Sezione personalizzazione per i panini aggiunti -->
+          <div class="menu-item-customs" *ngIf="isPanino(item) && quantitaSelezionata(item) > 0">
+            <div class="custom-panel" *ngFor="let c of getCarrelloItemsOf(item); let i = index">
+              <div class="custom-header">
+                <span class="custom-title" *ngIf="quantitaSelezionata(item) > 1">Modifica panino #{{ i + 1 }}</span>
+                <span class="custom-title" *ngIf="quantitaSelezionata(item) === 1">Modifica ingredienti</span>
+              </div>
+              <ul class="cart-ingredients">
+                <li *ngFor="let ing of c.ingredientiDisponibili" 
+                    [class.is-excluded]="isIngredienteEscluso(c, ing)"
+                    (click)="toggleIngrediente(c, ing)">
+                  <span class="ing-name">{{ ing }}</span>
+                  <button type="button" class="btn-toggle-ing" 
+                          [title]="isIngredienteEscluso(c, ing) ? 'Aggiungi' : 'Rimuovi'">
+                    {{ isIngredienteEscluso(c, ing) ? '+' : '✖' }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <!-- ═══ CONFERMA ORDINE ═══ -->
+  <div *ngIf="step === 'conferma'" class="conferma-section">
+    <h3>Ordine inviato in cucina!</h3>
+    <p>Il tuo ordine è stato ricevuto e verrà preparato a breve.</p>
+    <p class="hint">Puoi continuare ad ordinare o andare alla sezione "Il mio conto" per pagare.</p>
+    <button type="button" class="primary" (click)="ordinaAltro()">Ordina altro</button>
+  </div>
+
+  <!-- ═══ RISULTATO PRENOTAZIONE ═══ -->
+  <div *ngIf="step === 'risultato'">
+    <h3>Riepilogo</h3>
+    <p *ngIf="tipo === 'PRENOTAZIONE' && prenotazioneConfermata">
+      Prenotazione confermata per {{ prenotazionePersone }} persone il {{ prenotazioneData }} alle {{ prenotazioneOra }}.
+    </p>
+  </div>
+
+</section>

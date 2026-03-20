@@ -1,0 +1,108 @@
+/* AUTH COMPONENT — Bright Yellow */
+.auth-card {
+  display: grid;
+  gap: 1rem;
+  width: min(420px, 92vw);
+  padding: 1.8rem;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-card h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--dark);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-left: 3px solid #d32f2f;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.auth-form input {
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--gray-200);
+  background: var(--gray-100);
+  color: var(--dark);
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.auth-form input::placeholder { color: var(--gray-500); font-weight: 400; }
+.auth-form input:focus { border-color: var(--yellow); background: var(--white); }
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1.2rem;
+  background: var(--yellow);
+  color: var(--dark);
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(255,204,0,0.25);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.actions button:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-1px);
+}
+
+.actions .secondary {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  box-shadow: none;
+  border: 2px solid var(--gray-200);
+}
+
+.actions .secondary:hover {
+  border-color: var(--gray-300);
+  background: var(--gray-200);
+}
+
+.status {
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--green-light);
+  border-radius: var(--radius-sm);
+}

@@ -1,0 +1,212 @@
+/* GESTIONE MENU COMPONENT (Staff) */
+
+.menu-card {
+  padding: 1.5rem;
+  background: transparent;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.menu-header h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin: 0;
+}
+
+.header-actions button {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.3rem;
+  background: var(--yellow);
+  color: var(--dark);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(255,204,0,0.2);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.header-actions button:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-1px);
+}
+
+.header-actions button:disabled {
+  background: var(--gray-200);
+  color: var(--gray-500);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.menu-hint {
+  color: var(--gray-500);
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+}
+
+.error {
+  color: var(--red);
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  background: var(--red-light);
+  border-radius: var(--radius-sm);
+}
+
+.menu-empty {
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+/* ─── GRID LAYOUT ────────────────────────────────────────── */
+.menu-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.menu-section {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.menu-section-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--yellow);
+  padding-bottom: 0.3rem;
+  display: inline-block;
+}
+
+.menu-item-wrapper {
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+  padding: 1.2rem;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  border: 1px solid transparent;
+}
+.menu-item-wrapper:hover {
+  background: var(--white);
+  border-color: var(--yellow);
+  box-shadow: var(--shadow-sm);
+}
+
+.menu-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.menu-item-info h4 {
+  margin: 0 0 0.3rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--dark);
+}
+.menu-item-info .desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  line-height: 1.4;
+}
+
+/* ─── STAFF CONTROLS ─────────────────────────────────────── */
+.staff-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+
+.price {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--dark);
+}
+
+.stock-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.stock-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--green);
+  background: var(--green-light);
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.stock-label.empty {
+  color: var(--red);
+  background: var(--red-light);
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-minus, .btn-plus {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 800;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-minus {
+  background: var(--gray-200);
+  color: var(--dark);
+}
+.btn-minus:hover {
+  background: var(--gray-300);
+  transform: translateY(-1px);
+}
+
+.btn-plus {
+  background: var(--yellow);
+  color: var(--dark);
+}
+.btn-plus:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-1px);
+}
+
+/* ─── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .menu-item-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .staff-actions {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

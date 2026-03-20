@@ -1,0 +1,200 @@
+<div class="app-shell">
+
+  <!-- ═══ HERO (solo login) ═══ -->
+  <div class="login-hero" *ngIf="step !== 'servizi'">
+    <img class="hero-image" src="assets/the-cave-pub.jpg" alt="The Cave Pub" />
+    <div class="hero-overlay"></div>
+    <h1>The Cave Pub</h1>
+  </div>
+
+  <!-- ═══ LOGIN STEP ═══ -->
+  <div class="access-wrapper" *ngIf="step === 'login'">
+    
+    <div class="staff-access-link" *ngIf="accesso === 'cliente'" style="position: absolute; bottom: 15px; left: 15px; z-index: 1000;">
+      <a href="javascript:void(0)" (click)="selezionaAccesso('staff')" style="color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Accesso Staff</a>
+    </div>
+
+    <div class="staff-access-link" *ngIf="accesso === 'staff'" style="position: absolute; bottom: 15px; left: 15px; z-index: 1000;">
+      <a href="javascript:void(0)" (click)="resetAccesso()" style="color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Torna ad Accesso Cliente</a>
+    </div>
+
+    <!-- Staff login -->
+    <div class="login-overlay" *ngIf="accesso === 'staff'">
+      <app-auth (loginChange)="confermaLoginStaff($event)"></app-auth>
+    </div>
+
+    <!-- Cliente login -->
+    <section class="access-card login-overlay" *ngIf="accesso === 'cliente'">
+      <h2>Accesso Cliente</h2>
+      <div class="access-actions">
+        <input class="access-input" type="text" placeholder="Nome" [(ngModel)]="clienteNome" />
+        <input class="access-input" type="text" placeholder="Cognome" [(ngModel)]="clienteCognome" />
+        <select class="access-input" [(ngModel)]="clienteTipo">
+          <option value="">Tipo servizio...</option>
+          <option value="TAVOLO">Ordine al tavolo</option>
+          <option value="PRENOTAZIONE">Prenotazione tavolo</option>
+          <option value="ASPORTO">Asporto</option>
+          <option value="DOMICILIO">Domicilio</option>
+        </select>
+
+        <div class="login-section" *ngIf="clienteTipo === 'TAVOLO'">
+          <input class="access-input" type="number" placeholder="Numero tavolo" [(ngModel)]="clienteNumeroTavolo" min="1" />
+        </div>
+
+        <div class="login-section" *ngIf="clienteTipo === 'PRENOTAZIONE'">
+          <input class="access-input" type="number" placeholder="Numero persone" [(ngModel)]="clientePrenotazionePersone" min="1" />
+          <input class="access-input" type="text" placeholder="Telefono" [(ngModel)]="clienteTelefono" />
+          <input class="access-input" type="date" placeholder="Data" [(ngModel)]="clientePrenotazioneData" />
+          <input class="access-input" type="time" placeholder="Ora" [(ngModel)]="clientePrenotazioneOra" />
+        </div>
+
+        <div class="login-section" *ngIf="clienteTipo === 'DOMICILIO'">
+          <input class="access-input" type="text" placeholder="Telefono" [(ngModel)]="clienteTelefono" />
+          <input class="access-input" type="text" placeholder="Indirizzo" [(ngModel)]="clienteIndirizzo" />
+          <input class="access-input" type="text" placeholder="Comune (solo Rende)" [(ngModel)]="clienteComune" />
+          <input class="access-input" type="text" placeholder="Provincia (CS)" [(ngModel)]="clienteProvincia" />
+        </div>
+
+        <p class="error" *ngIf="erroreLogin" style="color: #ffaa00; font-weight: bold; margin-bottom: 15px;">{{ erroreLogin }}</p>
+
+        <button type="button" (click)="confermaLoginCliente()">Accedi</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══ DASHBOARD — Staff ═══ -->
+  <div class="dashboard" *ngIf="step === 'servizi' && accesso === 'staff'">
+    <header class="dash-header">
+      <h1 class="dash-logo">The Cave Pub</h1>
+      <nav class="dash-nav">
+        <span class="dash-role">Staff</span>
+        <button type="button" class="dash-logout" (click)="resetAccesso()">Esci</button>
+      </nav>
+    </header>
+    <main class="dash-content">
+      <details class="staff-accordion" open>
+        <summary>Prenotazioni</summary>
+        <div class="accordion-content">
+          <app-prenotazioni [accesso]="accesso" [cliente]="clienteInfo"></app-prenotazioni>
+        </div>
+      </details>
+
+      <details class="staff-accordion" open>
+        <summary>Ordini</summary>
+        <div class="accordion-content">
+          <app-ordini [accesso]="accesso" [cliente]="clienteInfo"></app-ordini>
+        </div>
+      </details>
+
+      <details class="staff-accordion">
+        <summary>Planimetria</summary>
+        <div class="accordion-content">
+          <app-tavoli-staff></app-tavoli-staff>
+        </div>
+      </details>
+
+      <details class="staff-accordion">
+        <summary>Gestione Menu</summary>
+        <div class="accordion-content">
+          <app-menu></app-menu>
+        </div>
+      </details>
+    </main>
+  </div>
+
+  <!-- ═══ DASHBOARD — Cliente ═══ -->
+  <div class="dashboard" *ngIf="step === 'servizi' && accesso === 'cliente'">
+    <header class="dash-header">
+      <h1 class="dash-logo">The Cave Pub</h1>
+      <nav class="dash-nav">
+        <span class="dash-user">{{ clienteNome }} {{ clienteCognome }}</span>
+        <!-- Tasto CONTO -->
+        <button
+          type="button"
+          class="btn-conto"
+          (click)="apriConto()"
+          *ngIf="vistaAttiva === 'servizio' && clienteTipo !== 'PRENOTAZIONE'"
+        >
+          Il mio conto
+        </button>
+        <button type="button" class="dash-logout" (click)="resetAccesso()">Esci</button>
+      </nav>
+    </header>
+    <main class="dash-content">
+      
+      <!-- VISTA SERVIZIO (MENU) -->
+      <app-servizio
+        [hidden]="vistaAttiva !== 'servizio'"
+        [loginData]="clienteLoginData"
+        (clienteChange)="aggiornaCliente($event)"
+        (ordineInviatoEvent)="aggiungiOrdine($event)"
+      ></app-servizio>
+
+      <!-- VISTA CONTO -->
+      <section class="card conto-card" *ngIf="vistaAttiva === 'conto'">
+        <div class="card-header">
+          <h2>Il mio conto</h2>
+          <button type="button" class="btn-conto torna-menu" (click)="tornaAlServizio()" *ngIf="!contoPagato">
+            ⬅ Torna al menu
+          </button>
+        </div>
+
+        <div class="conto-empty" *ngIf="ordiniEffettuati.length === 0">
+          <p>Non hai ancora effettuato ordini in questa sessione.</p>
+        </div>
+
+        <div class="conto-content" *ngIf="ordiniEffettuati.length > 0">
+          
+          <div class="ordini-list">
+            <div class="ordine-box" *ngFor="let ord of ordiniEffettuati; let i = index">
+              <h4>Ordine #{{ i + 1 }}</h4>
+              <ul>
+                <li *ngFor="let item of ord.items">
+                  <div class="conto-item-riga">
+                    <span>{{ item.nome }} × {{ item.quantita }}</span>
+                    <span>€ {{ item.prezzo | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="conto-note" *ngIf="item.note">{{ item.note }}</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="conto-totale">
+            <h3>Totale da pagare: € {{ totaleConto() | number:'1.2-2' }}</h3>
+          </div>
+
+          <div class="conto-actions" *ngIf="!contoPagato">
+            <button type="button" class="primary btn-paga" (click)="pagaConto()">
+              Paga Subito
+            </button>
+          </div>
+
+          <!-- RICEVUTA E CODICE A BARRE DOPO PAGAMENTO -->
+          <div class="ricevuta" *ngIf="contoPagato">
+            <div class="ricevuta-header">
+              <h3>Pagamento completato</h3>
+              <p>Mostra questo codice all'uscita per lasciare il locale.</p>
+            </div>
+            
+            <div class="barcode-container">
+              <!-- Codice a barre simulato in CSS -->
+              <div class="barcode-lines">
+                <div class="bar w2"></div><div class="bar w1"></div><div class="bar w3"></div>
+                <div class="bar w1"></div><div class="bar w2"></div><div class="bar w2"></div><div class="bar w1"></div>
+                <div class="bar w3"></div><div class="bar w1"></div><div class="bar w2"></div><div class="bar w1"></div>
+                <div class="bar w2"></div><div class="bar w3"></div><div class="bar w1"></div><div class="bar w2"></div>
+              </div>
+              <div class="barcode-text">{{ codiceUscita }}</div>
+            </div>
+            
+            <button type="button" class="primary btn-esci" (click)="resetAccesso()">Chiudi sessione ed Esci</button>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</div>

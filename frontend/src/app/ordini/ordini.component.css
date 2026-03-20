@@ -1,0 +1,131 @@
+/* ORDINI COMPONENT — Bright Yellow */
+
+.card {
+  padding: 1.5rem;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-top: 1.2rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.card-header h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin: 0;
+}
+
+.card-header button {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.3rem;
+  background: var(--yellow);
+  color: var(--dark);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(255,204,0,0.2);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.card-header button:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-1px);
+}
+
+.card-header button:disabled {
+  background: var(--gray-200);
+  color: var(--gray-500);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hint {
+  color: var(--gray-500);
+  margin: 0.4rem 0 1rem;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: var(--red);
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  background: var(--red-light);
+  border-radius: var(--radius-sm);
+}
+
+.empty {
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+.order-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.order {
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  background: var(--gray-100);
+  transition: background 0.2s;
+}
+
+.order:hover {
+  background: var(--yellow-light);
+}
+
+.order-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.order h3 {
+  margin: 0 0 0.3rem;
+  font-weight: 700;
+  color: var(--dark);
+  font-size: 1rem;
+}
+
+.meta {
+  margin: 0.15rem 0;
+  color: var(--gray-500);
+  font-size: 0.88rem;
+}
+
+.total {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0.6rem 0 0;
+  display: grid;
+  gap: 0.3rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.items li {
+  display: flex;
+  justify-content: space-between;
+  color: var(--gray-700);
+  font-size: 0.88rem;
+}
