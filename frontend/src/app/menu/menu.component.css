@@ -120,11 +120,9 @@
 .menu-item-info .desc {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--gray-600);
+  color: var(--gray-700);
   line-height: 1.4;
 }
-
-/* ─── STAFF CONTROLS ─────────────────────────────────────── */
 .staff-actions {
   display: flex;
   flex-direction: column;
