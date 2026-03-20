@@ -3,4 +3,5 @@ export interface OrdineItem {
   menuItemId: number;
   menuItemNome?: string;
   quantita: number;
+  note?: string;
 }

@@ -23,6 +23,9 @@ public interface PrenotazioneRepository extends JpaRepository<PrenotazioneEntity
     // Trova tutte le prenotazioni di una data specifica
     List<PrenotazioneEntity> findByData(LocalDate data);
 
+    // Ordina tutte le prenotazioni per data e ora
+    List<PrenotazioneEntity> findAllByOrderByDataAscOraAsc();
+
     // Aggiornamento diretto dello stato tramite JPQL
     @Transactional
     @Modifying

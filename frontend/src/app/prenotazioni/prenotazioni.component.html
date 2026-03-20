@@ -6,8 +6,6 @@
     </button>
   </div>
 
-  <p class="hint">Recupera i dati da <code>/pubflow/prenotazioni</code>.</p>
-
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <p *ngIf="!loading && !errorMessage && prenotazioniFiltrate.length === 0" class="empty">
     Nessuna prenotazione disponibile. Premi "Carica prenotazioni".

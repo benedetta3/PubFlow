@@ -393,6 +393,11 @@
   margin: 0 auto;
 }
 
+.cliente-ordini-card {
+  max-width: 600px;
+  margin: 1.5rem auto 0;
+}
+
 .conto-empty {
   text-align: center;
   padding: 3rem 1rem;
@@ -411,6 +416,23 @@
   border: 1px solid var(--yellow);
   border-radius: var(--radius-sm);
   padding: 1rem;
+}
+
+.ordine-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.ordine-stato {
+  background: rgba(20, 20, 20, 0.85);
+  color: var(--yellow);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .ordine-box h4 {
@@ -446,6 +468,13 @@
   font-style: italic;
 }
 
+.ordine-subtotale {
+  margin-top: 0.8rem;
+  font-weight: 700;
+  color: var(--dark);
+  text-align: right;
+}
+
 .conto-totale {
   text-align: right;
   border-top: 2px solid var(--gray-200);
@@ -460,10 +489,43 @@
   font-weight: 800;
 }
 
+.conto-hint {
+  margin-top: 0.6rem;
+  color: var(--gray-700);
+  font-size: 0.9rem;
+}
+
+.btn-paga[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .btn-paga {
   width: 100%;
   padding: 1.2rem;
   font-size: 1.1rem;
+}
+
+.btn-paga,
+.btn-esci {
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--yellow);
+  color: var(--dark);
+  font-family: var(--font);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(255,204,0,0.25);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-paga:hover,
+.btn-esci:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-1px);
 }
 
 /* ─── RICEVUTA E CODICE A BARRE ────────────────────────────── */
@@ -517,6 +579,9 @@
 
 .btn-esci {
   margin-top: 1rem;
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1rem;
 }
 
 /* ─── ACCORDION STAFF ─────────────────────────────────────── */

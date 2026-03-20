@@ -6,4 +6,5 @@ export interface MenuItem {
   categoria: string;
   disponibile: boolean;
   quantitaDisponibile: number;
+  custom?: boolean;
 }

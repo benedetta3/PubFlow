@@ -2,23 +2,27 @@
   <div class="menu-header">
     <h2>Gestione Menu</h2>
     <div class="header-actions">
+      <button type="button" class="secondary" (click)="saveChanges()" [disabled]="saving || !hasPendingChanges">
+        {{ saving ? 'Salvataggio...' : 'Salva modifiche' }}
+      </button>
       <button type="button" class="primary" (click)="loadMenu()" [disabled]="loading">
         {{ loading ? 'Caricamento...' : 'Ricarica' }}
       </button>
     </div>
   </div>
 
-  <p class="menu-hint">Visualizza e modifica le quantità di magazzino in tempo reale.</p>
+  <p class="menu-hint">Modifica le quantità e salva le variazioni quando hai finito.</p>
+  <p *ngIf="hasPendingChanges" class="menu-pending">Hai modifiche non salvate.</p>
 
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <p *ngIf="!loading && !errorMessage && items.length === 0" class="menu-empty">
     Nessun elemento disponibile. Premi "Ricarica".
   </p>
 
-  <div class="menu-grid" *ngIf="items.length > 0">
-    <section class="menu-section" *ngFor="let gruppo of menuRaggruppato">
+  <div class="menu-grid" *ngIf="menuRaggruppato.length > 0">
+    <section class="menu-section" *ngFor="let gruppo of menuRaggruppato; trackBy: trackByCategoria">
       <h4 class="menu-section-title">{{ gruppo.categoria }}</h4>
-      <article class="menu-item-wrapper" *ngFor="let item of gruppo.items">
+      <article class="menu-item-wrapper" *ngFor="let item of gruppo.items; trackBy: trackByItem">
         <div class="menu-item-main">
           <div class="menu-item-info">
             <h4>{{ item.nome }}</h4>
@@ -35,7 +39,28 @@
                 <button type="button" class="btn-plus" (click)="addAvailability(item)">+</button>
               </div>
             </div>
+            <button *ngIf="canDelete(item)" type="button" class="btn-delete" (click)="deleteItem(item)">
+              Elimina
+            </button>
           </div>
+        </div>
+      </article>
+
+      <article class="menu-item-wrapper menu-item-add">
+        <div class="menu-item-main">
+          <div class="menu-item-info">
+            <h4>Aggiungi {{ gruppo.categoria | lowercase }}</h4>
+            <p class="desc">Inserisci i dettagli del nuovo prodotto.</p>
+          </div>
+        </div>
+        <div class="menu-add-form">
+          <input type="text" placeholder="Nome" [(ngModel)]="getDraft(gruppo.categoria).nome" />
+          <input type="text" placeholder="Descrizione" [(ngModel)]="getDraft(gruppo.categoria).descrizione" />
+          <input type="number" placeholder="Quantità" min="0" [(ngModel)]="getDraft(gruppo.categoria).quantitaDisponibile" />
+          <input type="number" placeholder="Prezzo" min="0" step="0.01" [(ngModel)]="getDraft(gruppo.categoria).prezzo" />
+          <button type="button" class="primary" (click)="createItem(gruppo.categoria)" [disabled]="isCreating(gruppo.categoria)">
+            {{ isCreating(gruppo.categoria) ? 'Creazione...' : 'Aggiungi prodotto' }}
+          </button>
         </div>
       </article>
     </section>

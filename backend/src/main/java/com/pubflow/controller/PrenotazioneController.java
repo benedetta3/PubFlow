@@ -86,7 +86,7 @@ public class PrenotazioneController {
 
     // DELETE /pubflow/prenotazioni/{id}  -> elimina prenotazione
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         Prenotazione prenotazione = prenotazioneService.getById(id);
         if (prenotazione == null) {

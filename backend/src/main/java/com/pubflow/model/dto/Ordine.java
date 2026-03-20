@@ -17,7 +17,7 @@ public class Ordine {
     @NotNull
     private String tipoOrdine;   // TAVOLO, ASPORTO, DOMICILIO
 
-    private String stato;        // RICEVUTO, IN_PREPARAZIONE, PRONTO, CONSEGNATO
+    private String stato;        // RICEVUTO, IN_PREPARAZIONE, PRONTO, IN_CONSEGNA, CONSEGNATO
     private BigDecimal totale;
     private String telefonoCliente;
     private Integer numeroTavolo;       // solo se TAVOLO

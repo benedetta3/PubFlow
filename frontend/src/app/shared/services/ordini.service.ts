@@ -16,6 +16,16 @@ export class OrdiniService {
     return this.http.get<Ordine[]>(this.baseUrl);
   }
 
+  create(ordine: Partial<Ordine>): Observable<Ordine> {
+    return this.http.post<Ordine>(this.baseUrl, ordine);
+  }
+
+  aggiornaStato(id: number, stato: string): Observable<number> {
+    return this.http.patch<number>(`${this.baseUrl}/${id}/stato`, null, {
+      params: { stato }
+    });
+  }
+
   pagaOrdiniTavolo(numeroTavolo: number): Observable<number> {
     return this.http.post<number>(`${this.baseUrl}/tavolo/${numeroTavolo}/paga`, {});
   }

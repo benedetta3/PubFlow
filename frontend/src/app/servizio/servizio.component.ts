@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, Input, OnChanges, SimpleChanges } from
 import { MenuService } from '../shared/services/menu.service';
 import { MenuItem } from '../shared/models/menu-item';
 import { PrenotazioniService } from '../shared/services/prenotazioni.service';
+import { OrdiniService } from '../shared/services/ordini.service';
 
 export type TipoServizio = 'TAVOLO' | 'PRENOTAZIONE' | 'ASPORTO' | 'DOMICILIO' | '';
 
@@ -41,6 +42,11 @@ export interface ClienteLoginData {
   provincia?: string;
 }
 
+interface CarrelloRecoveryItem {
+  menuItemId: number;
+  ingredientiEsclusi: string[];
+}
+
 @Component({
   selector: 'app-servizio',
   templateUrl: './servizio.component.html',
@@ -48,6 +54,7 @@ export interface ClienteLoginData {
 })
 export class ServizioComponent implements OnChanges {
   @Input() loginData: ClienteLoginData | null = null;
+  @Input() contoPagato = false;
   @Output() clienteChange = new EventEmitter<ClienteInfo | null>();
   @Output() ordineInviatoEvent = new EventEmitter<OrdineEffettuato>();
 
@@ -80,15 +87,23 @@ export class ServizioComponent implements OnChanges {
   // (rimosso: lista sempre visibile per i panini)
 
   private ordineCounter = 0;
+  private readonly aperturaOra = '19:30';
+  private readonly chiusuraOra = '23:00';
+  private readonly recoveryKey = 'pubflow_cart_recovery';
+  private readonly recoveryTtlMs = 2 * 60 * 60 * 1000;
 
   constructor(
     private menuService: MenuService,
-    private prenotazioniService: PrenotazioniService
+    private prenotazioniService: PrenotazioniService,
+    private ordiniService: OrdiniService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['loginData'] && this.loginData) {
       this.prefillFromLogin(this.loginData);
+    }
+    if (changes['contoPagato'] && this.contoPagato) {
+      this.clearRecoveryState();
     }
   }
 
@@ -110,12 +125,28 @@ export class ServizioComponent implements OnChanges {
         this.errorMessage = 'Il numero di telefono deve contenere esattamente 10 cifre.';
         return;
       }
+      const prenotazioneError = this.validaPrenotazione();
+      if (prenotazioneError) {
+        this.errorMessage = prenotazioneError;
+        return;
+      }
       return;
     }
 
     if (this.tipo === 'TAVOLO') {
       if (!this.numeroTavolo) {
         this.errorMessage = 'Inserisci il numero del tavolo.';
+        return;
+      }
+    }
+
+    if (this.tipo === 'ASPORTO') {
+      if (!this.telefono.trim()) {
+        this.errorMessage = 'Inserisci il numero di telefono per l\'asporto.';
+        return;
+      }
+      if (!/^\d{10}$/.test(this.telefono.trim())) {
+        this.errorMessage = 'Il numero di telefono deve contenere esattamente 10 cifre.';
         return;
       }
     }
@@ -148,6 +179,9 @@ export class ServizioComponent implements OnChanges {
     if (!this.prenotazioneOra) {
       return '';
     }
+    if (!this.isOrarioApertura(this.prenotazioneOra)) {
+      return 'Orario di apertura: 19:30 - 23:00.';
+    }
     const ora = this.prenotazioneOra.slice(0, 2);
     const oraNum = Number(ora);
     if (oraNum >= 20 && oraNum <= 21 && (this.prenotazionePersone ?? 0) > 200) {
@@ -164,6 +198,12 @@ export class ServizioComponent implements OnChanges {
 
     if (!/^\d{10}$/.test(this.telefono.trim())) {
       this.errorMessage = 'Il numero di telefono deve contenere esattamente 10 cifre.';
+      return;
+    }
+
+    const prenotazioneError = this.validaPrenotazione();
+    if (prenotazioneError) {
+      this.errorMessage = prenotazioneError;
       return;
     }
 
@@ -186,6 +226,7 @@ export class ServizioComponent implements OnChanges {
         this.prenotazioneConfermata = true;
         this.emitClienteInfo();
         this.step = 'risultato';
+        this.saveRecoveryState();
       },
       error: (err: any) => {
         this.errorMessage = err.error?.error || 'Errore durante la creazione della prenotazione.';
@@ -201,6 +242,7 @@ export class ServizioComponent implements OnChanges {
         this.menu = menu ?? [];
         this.menuRaggruppato = this.buildMenuRaggruppato(this.menu);
         this.menuLoading = false;
+        this.saveRecoveryState();
       },
       error: () => {
         this.errorMessage = 'Errore nel caricamento del menu.';
@@ -239,6 +281,7 @@ export class ServizioComponent implements OnChanges {
     } else {
       carrelloItem.ingredientiEsclusi.push(ingrediente);
     }
+    this.saveRecoveryState();
   }
 
   isIngredienteEscluso(carrelloItem: CarrelloItem, ingrediente: string): boolean {
@@ -267,6 +310,7 @@ export class ServizioComponent implements OnChanges {
     if (this.isPanino(item) && item.id) {
       // La lista ingredienti è già visibile per impostazione HTML
     }
+    this.saveRecoveryState();
   }
 
   rimuovi(item: MenuItem): void {
@@ -276,6 +320,7 @@ export class ServizioComponent implements OnChanges {
     if (lastIdx !== -1) {
       this.carrello.splice(lastIdx, 1);
     }
+    this.saveRecoveryState();
   }
 
   isDisponibile(item: MenuItem): boolean {
@@ -334,24 +379,53 @@ export class ServizioComponent implements OnChanges {
       this.errorMessage = 'Seleziona almeno un articolo.';
       return;
     }
-    this.ordineInviato = true;
-    this.ordineCounter++;
+    this.errorMessage = '';
 
-    // Emetti l'ordine al componente padre
-    const ordine: OrdineEffettuato = {
-      id: this.ordineCounter,
-      items: this.carrello.map(c => ({
-        nome: c.item.nome,
-        quantita: 1,
-        prezzo: (c.item.prezzo ?? 0),
-        note: this.getNotaIngredienti(c) || undefined
-      })),
-      totale: this.totale(),
-      dataOra: new Date()
+    const itemsPayload = this.carrello.map((c) => ({
+      menuItemId: c.item.id as number,
+      quantita: c.quantita,
+      note: this.getNotaIngredienti(c) || undefined
+    }));
+
+    if (itemsPayload.some((item) => !item.menuItemId)) {
+      this.errorMessage = 'Impossibile inviare l\'ordine: articolo non valido.';
+      return;
+    }
+
+    const payload = {
+      tipoOrdine: this.tipo,
+      telefonoCliente: this.telefono.trim() || undefined,
+      numeroTavolo: this.numeroTavolo ?? undefined,
+      indirizzoConsegna: this.indirizzo.trim() || undefined,
+      items: itemsPayload
     };
-    this.ordineInviatoEvent.emit(ordine);
 
-    this.step = 'conferma';
+    this.ordiniService.create(payload).subscribe({
+      next: (created) => {
+        this.ordineInviato = true;
+        const ordineId = created?.numeroOrdine ?? ++this.ordineCounter;
+        this.ordineCounter = Math.max(this.ordineCounter, ordineId);
+
+        const ordine: OrdineEffettuato = {
+          id: ordineId,
+          items: this.carrello.map((c) => ({
+            nome: c.item.nome,
+            quantita: c.quantita,
+            prezzo: (c.item.prezzo ?? 0),
+            note: this.getNotaIngredienti(c) || undefined
+          })),
+          totale: this.totale(),
+          dataOra: new Date()
+        };
+        this.ordineInviatoEvent.emit(ordine);
+
+        this.step = 'conferma';
+        this.saveRecoveryState();
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.error || 'Errore durante l\'invio dell\'ordine.';
+      }
+    });
   }
 
   ordinaAltro(): void {
@@ -360,10 +434,12 @@ export class ServizioComponent implements OnChanges {
     this.ordineInviato = false;
     this.errorMessage = '';
     this.step = 'menu';
+    this.saveRecoveryState();
   }
 
   toggleCarrello(): void {
     this.carrelloAperto = !this.carrelloAperto;
+    this.saveRecoveryState();
   }
 
   reset(): void {
@@ -387,6 +463,7 @@ export class ServizioComponent implements OnChanges {
     this.carrelloAperto = false;
     this.ordineInviato = false;
     this.clienteChange.emit(null);
+    this.clearRecoveryState();
   }
 
   private emitClienteInfo(): void {
@@ -411,11 +488,115 @@ export class ServizioComponent implements OnChanges {
     this.comune = data.comune ?? '';
     this.provincia = data.provincia ?? '';
     this.errorMessage = '';
-
     if (this.step === 'dati' && this.tipo && this.nome.trim() && this.cognome.trim()) {
       if (this.tipo !== 'PRENOTAZIONE') {
         this.avvia();
       }
     }
+  }
+
+  get prenotazioneMinDate(): string {
+    const year = new Date().getFullYear();
+    return `${year}-01-01`;
+  }
+
+  get prenotazioneMaxDate(): string {
+    const year = new Date().getFullYear();
+    return `${year}-12-31`;
+  }
+
+  private validaPrenotazione(): string | null {
+    if (!this.isDataAnnoCorrente(this.prenotazioneData)) {
+      return "La prenotazione è disponibile solo per l'anno corrente.";
+    }
+    if (!this.isDataNonPassata(this.prenotazioneData)) {
+      return 'La data della prenotazione deve essere oggi o futura.';
+    }
+    if (!this.isOrarioApertura(this.prenotazioneOra)) {
+      return 'Orario di apertura: 19:30 - 23:00.';
+    }
+    return null;
+  }
+
+  private isDataAnnoCorrente(data: string): boolean {
+    if (!data) {
+      return false;
+    }
+    const year = Number(data.split('-')[0]);
+    return year === new Date().getFullYear();
+  }
+
+  private isDataNonPassata(data: string): boolean {
+    if (!data) {
+      return false;
+    }
+    const [year, month, day] = data.split('-').map(Number);
+    if (!year || !month || !day) {
+      return false;
+    }
+    const inputDate = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return inputDate.getTime() >= today.getTime();
+  }
+
+  private isOrarioApertura(ora: string): boolean {
+    if (!ora) {
+      return false;
+    }
+    return this.toMinutes(ora) >= this.toMinutes(this.aperturaOra)
+      && this.toMinutes(ora) <= this.toMinutes(this.chiusuraOra);
+  }
+
+  private toMinutes(ora: string): number {
+    const [hh, mm] = ora.split(':').map(Number);
+    return hh * 60 + mm;
+  }
+
+  private saveRecoveryState(): void {
+    // memoria disattivata su richiesta
+  }
+
+  private tryRestoreRecovery(): boolean {
+    return false;
+  }
+
+  private buildCarrelloFromRecovery(items: CarrelloRecoveryItem[]): CarrelloItem[] {
+    const result: CarrelloItem[] = [];
+    items.forEach((item) => {
+      const menuItem = this.menu.find((m) => m.id === item.menuItemId);
+      if (!menuItem) {
+        return;
+      }
+      result.push({
+        idLocale: Date.now() + Math.random(),
+        item: menuItem,
+        quantita: 1,
+        ingredientiDisponibili: this.parseIngredienti(menuItem),
+        ingredientiEsclusi: item.ingredientiEsclusi ?? []
+      });
+    });
+    return result;
+  }
+
+  private isSameLoginData(saved: ClienteLoginData): boolean {
+    if (!this.loginData) {
+      return false;
+    }
+    return saved.tipo === this.loginData.tipo
+      && (saved.nome ?? '').trim().toLowerCase() === (this.loginData.nome ?? '').trim().toLowerCase()
+      && (saved.cognome ?? '').trim().toLowerCase() === (this.loginData.cognome ?? '').trim().toLowerCase()
+      && (saved.numeroTavolo ?? null) === (this.loginData.numeroTavolo ?? null)
+      && (saved.prenotazionePersone ?? null) === (this.loginData.prenotazionePersone ?? null)
+      && (saved.prenotazioneData ?? '') === (this.loginData.prenotazioneData ?? '')
+      && (saved.prenotazioneOra ?? '') === (this.loginData.prenotazioneOra ?? '')
+      && (saved.telefono ?? '').trim() === (this.loginData.telefono ?? '').trim()
+      && (saved.indirizzo ?? '').trim() === (this.loginData.indirizzo ?? '').trim()
+      && (saved.comune ?? '').trim().toLowerCase() === (this.loginData.comune ?? '').trim().toLowerCase()
+      && (saved.provincia ?? '').trim().toLowerCase() === (this.loginData.provincia ?? '').trim().toLowerCase();
+  }
+
+  private clearRecoveryState(): void {
+    // memoria disattivata su richiesta
   }
 }

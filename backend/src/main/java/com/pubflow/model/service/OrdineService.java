@@ -88,6 +88,7 @@ public class OrdineService {
             itemEntity.setOrdine(entity);
             itemEntity.setMenuItem(menuItem);
             itemEntity.setQuantita(itemDto.getQuantita());
+            itemEntity.setNote(itemDto.getNote());
             items.add(itemEntity);
 
             totale = totale.add(menuItem.getPrezzo().multiply(
@@ -109,7 +110,7 @@ public class OrdineService {
     // Invalida la cache per far vedere subito il nuovo stato al cliente
     @CacheEvict(value = "ordineNumeroCache", allEntries = true)
     public int aggiornaStato(Long id, String nuovoStato) {
-        // Validazione flusso: RICEVUTO -> IN_PREPARAZIONE -> PRONTO -> CONSEGNATO
+        // Validazione flusso: RICEVUTO -> IN_PREPARAZIONE -> PRONTO -> IN_CONSEGNA -> CONSEGNATO
         OrdineEntity ordine = ordineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Ordine non trovato con id: " + id));
 
@@ -128,7 +129,8 @@ public class OrdineService {
         return switch (statoAttuale) {
             case "RICEVUTO"        -> "IN_PREPARAZIONE".equals(nuovoStato);
             case "IN_PREPARAZIONE" -> "PRONTO".equals(nuovoStato);
-            case "PRONTO"          -> "CONSEGNATO".equals(nuovoStato);
+            case "PRONTO"          -> "IN_CONSEGNA".equals(nuovoStato) || "CONSEGNATO".equals(nuovoStato);
+            case "IN_CONSEGNA"     -> "CONSEGNATO".equals(nuovoStato);
             default -> false; // CONSEGNATO è stato finale
         };
     }

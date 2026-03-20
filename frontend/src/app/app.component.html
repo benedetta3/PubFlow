@@ -44,8 +44,26 @@
         <div class="login-section" *ngIf="clienteTipo === 'PRENOTAZIONE'">
           <input class="access-input" type="number" placeholder="Numero persone" [(ngModel)]="clientePrenotazionePersone" min="1" />
           <input class="access-input" type="text" placeholder="Telefono" [(ngModel)]="clienteTelefono" />
-          <input class="access-input" type="date" placeholder="Data" [(ngModel)]="clientePrenotazioneData" />
-          <input class="access-input" type="time" placeholder="Ora" [(ngModel)]="clientePrenotazioneOra" />
+          <input
+            class="access-input"
+            type="date"
+            placeholder="Data"
+            [(ngModel)]="clientePrenotazioneData"
+            [attr.min]="prenotazioneMinDate"
+            [attr.max]="prenotazioneMaxDate"
+          />
+          <input
+            class="access-input"
+            type="time"
+            placeholder="Ora"
+            [(ngModel)]="clientePrenotazioneOra"
+            min="19:30"
+            max="23:00"
+          />
+        </div>
+
+        <div class="login-section" *ngIf="clienteTipo === 'ASPORTO'">
+          <input class="access-input" type="text" placeholder="Telefono" [(ngModel)]="clienteTelefono" />
         </div>
 
         <div class="login-section" *ngIf="clienteTipo === 'DOMICILIO'">
@@ -72,24 +90,24 @@
       </nav>
     </header>
     <main class="dash-content">
-      <details class="staff-accordion" open>
-        <summary>Prenotazioni</summary>
-        <div class="accordion-content">
-          <app-prenotazioni [accesso]="accesso" [cliente]="clienteInfo"></app-prenotazioni>
-        </div>
-      </details>
-
-      <details class="staff-accordion" open>
-        <summary>Ordini</summary>
-        <div class="accordion-content">
-          <app-ordini [accesso]="accesso" [cliente]="clienteInfo"></app-ordini>
-        </div>
-      </details>
-
-      <details class="staff-accordion">
+      <details class="staff-accordion" open (toggle)="onTavoliToggle($event, tavoliComp)">
         <summary>Planimetria</summary>
         <div class="accordion-content">
-          <app-tavoli-staff></app-tavoli-staff>
+          <app-tavoli-staff #tavoliComp></app-tavoli-staff>
+        </div>
+      </details>
+
+      <details class="staff-accordion" (toggle)="onPrenotazioniToggle($event, prenotazioniComp)">
+        <summary>Prenotazioni</summary>
+        <div class="accordion-content">
+          <app-prenotazioni #prenotazioniComp [accesso]="accesso" [cliente]="clienteInfo"></app-prenotazioni>
+        </div>
+      </details>
+
+      <details class="staff-accordion" (toggle)="onOrdiniToggle($event, ordiniComp)">
+        <summary>Ordini</summary>
+        <div class="accordion-content">
+          <app-ordini #ordiniComp [accesso]="accesso" [cliente]="clienteInfo"></app-ordini>
         </div>
       </details>
 
@@ -115,7 +133,7 @@
           (click)="apriConto()"
           *ngIf="vistaAttiva === 'servizio' && clienteTipo !== 'PRENOTAZIONE'"
         >
-          Il mio conto
+          I miei ordini
         </button>
         <button type="button" class="dash-logout" (click)="resetAccesso()">Esci</button>
       </nav>
@@ -126,6 +144,7 @@
       <app-servizio
         [hidden]="vistaAttiva !== 'servizio'"
         [loginData]="clienteLoginData"
+        [contoPagato]="contoPagato"
         (clienteChange)="aggiornaCliente($event)"
         (ordineInviatoEvent)="aggiungiOrdine($event)"
       ></app-servizio>
@@ -133,30 +152,33 @@
       <!-- VISTA CONTO -->
       <section class="card conto-card" *ngIf="vistaAttiva === 'conto'">
         <div class="card-header">
-          <h2>Il mio conto</h2>
+          <h2>I miei ordini</h2>
           <button type="button" class="btn-conto torna-menu" (click)="tornaAlServizio()" *ngIf="!contoPagato">
             ⬅ Torna al menu
           </button>
         </div>
 
-        <div class="conto-empty" *ngIf="ordiniEffettuati.length === 0">
+        <div class="conto-empty" *ngIf="clientOrders.length === 0">
           <p>Non hai ancora effettuato ordini in questa sessione.</p>
         </div>
 
-        <div class="conto-content" *ngIf="ordiniEffettuati.length > 0">
+        <div class="conto-content" *ngIf="clientOrders.length > 0">
           
           <div class="ordini-list">
-            <div class="ordine-box" *ngFor="let ord of ordiniEffettuati; let i = index">
-              <h4>Ordine #{{ i + 1 }}</h4>
+            <div class="ordine-box" *ngFor="let ord of clientOrders; let i = index">
+              <div class="ordine-box-header">
+                <h4>Ordine #{{ ord.numeroOrdine || (i + 1) }}</h4>
+                <span class="ordine-stato">{{ formatStatoOrdine(ord.stato) }}</span>
+              </div>
               <ul>
                 <li *ngFor="let item of ord.items">
                   <div class="conto-item-riga">
-                    <span>{{ item.nome }} × {{ item.quantita }}</span>
-                    <span>€ {{ item.prezzo | number:'1.2-2' }}</span>
+                    <span>{{ item.menuItemNome || ('Voce #' + item.menuItemId) }} × {{ item.quantita }}</span>
                   </div>
                   <div class="conto-note" *ngIf="item.note">{{ item.note }}</div>
                 </li>
               </ul>
+              <div class="ordine-subtotale">Totale ordine: € {{ ord.totale | number:'1.2-2' }}</div>
             </div>
           </div>
 
@@ -164,20 +186,30 @@
             <h3>Totale da pagare: € {{ totaleConto() | number:'1.2-2' }}</h3>
           </div>
 
-          <div class="conto-actions" *ngIf="!contoPagato">
-            <button type="button" class="primary btn-paga" (click)="pagaConto()">
+          <div class="conto-actions" *ngIf="!contoPagato && clienteTipo === 'TAVOLO'">
+            <button type="button" class="primary btn-paga" (click)="pagaConto()" [disabled]="!canPay()">
               Paga Subito
             </button>
+            <p class="conto-hint" *ngIf="!canPay()">Puoi pagare solo dopo che tutti gli ordini sono consegnati.</p>
+          </div>
+
+          <div class="conto-actions" *ngIf="!contoPagato && clienteTipo !== 'TAVOLO'">
+            <button type="button" class="primary btn-paga" (click)="pagaConto()" [disabled]="!canPay()">
+              Paga Subito
+            </button>
+            <p class="conto-hint" *ngIf="!canPay()">Effettua almeno un ordine per pagare.</p>
+            <p class="conto-hint" *ngIf="canPay()">Per asporto e domicilio il pagamento è immediato.</p>
           </div>
 
           <!-- RICEVUTA E CODICE A BARRE DOPO PAGAMENTO -->
           <div class="ricevuta" *ngIf="contoPagato">
             <div class="ricevuta-header">
               <h3>Pagamento completato</h3>
-              <p>Mostra questo codice all'uscita per lasciare il locale.</p>
+              <p *ngIf="clienteTipo === 'TAVOLO'">Mostra questo codice all'uscita per lasciare il locale.</p>
+              <p *ngIf="clienteTipo !== 'TAVOLO'">Il tuo ordine è in preparazione. Segui gli aggiornamenti fino a consegnato.</p>
             </div>
-            
-            <div class="barcode-container">
+
+            <div class="barcode-container" *ngIf="clienteTipo === 'TAVOLO'">
               <!-- Codice a barre simulato in CSS -->
               <div class="barcode-lines">
                 <div class="bar w2"></div><div class="bar w1"></div><div class="bar w3"></div>
@@ -187,8 +219,8 @@
               </div>
               <div class="barcode-text">{{ codiceUscita }}</div>
             </div>
-            
-            <button type="button" class="primary btn-esci" (click)="resetAccesso()">Chiudi sessione ed Esci</button>
+
+            <button type="button" class="primary btn-esci" (click)="resetAccesso()">Esci</button>
           </div>
 
         </div>

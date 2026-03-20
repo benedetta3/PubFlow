@@ -35,6 +35,17 @@
   transition: background 0.2s, transform 0.15s;
 }
 
+.header-actions button.secondary {
+  background: var(--green);
+  color: var(--white);
+  box-shadow: 0 3px 10px rgba(0, 180, 100, 0.2);
+}
+
+.header-actions button.secondary:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
 .header-actions button:hover {
   background: var(--yellow-hover);
   transform: translateY(-1px);
@@ -52,6 +63,13 @@
   color: var(--gray-500);
   margin: 0 0 1.5rem;
   font-size: 0.95rem;
+}
+
+.menu-pending {
+  margin: -1rem 0 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--yellow-dark, #a87900);
 }
 
 .error {
@@ -98,6 +116,11 @@
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
   border: 1px solid transparent;
 }
+
+.menu-item-wrapper.menu-item-add {
+  background: var(--white);
+  border: 1px dashed var(--yellow);
+}
 .menu-item-wrapper:hover {
   background: var(--white);
   border-color: var(--yellow);
@@ -128,6 +151,27 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 0.6rem;
+}
+
+.menu-add-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.menu-add-form input {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.menu-add-form button {
+  justify-self: flex-start;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
 }
 
 .price {
@@ -191,6 +235,25 @@
 }
 .btn-plus:hover {
   background: var(--yellow-hover);
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--red-light);
+  color: var(--red);
+  padding: 0.4rem 0.8rem;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.2s;
+}
+
+.btn-delete:hover {
+  filter: brightness(0.95);
   transform: translateY(-1px);
 }
 

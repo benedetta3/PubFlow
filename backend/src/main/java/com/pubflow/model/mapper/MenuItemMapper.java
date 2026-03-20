@@ -20,6 +20,7 @@ public class MenuItemMapper {
         dto.setCategoria(entity.getCategoria());
         dto.setDisponibile(entity.isDisponibile());
         dto.setQuantitaDisponibile(entity.getQuantitaDisponibile());
+        dto.setCustom(entity.getCustom());
         return dto;
     }
 
@@ -36,6 +37,7 @@ public class MenuItemMapper {
         entity.setCategoria(dto.getCategoria());
         entity.setDisponibile(dto.isDisponibile());
         entity.setQuantitaDisponibile(dto.getQuantitaDisponibile());
+        entity.setCustom(dto.getCustom());
         return entity;
     }
 }

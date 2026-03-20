@@ -26,7 +26,7 @@ public class OrdineEntity {
     @Column(name = "tipo_ordine")
     private String tipoOrdine;
 
-    // Stato: RICEVUTO, IN_PREPARAZIONE, PRONTO, CONSEGNATO
+    // Stato: RICEVUTO, IN_PREPARAZIONE, PRONTO, IN_CONSEGNA, CONSEGNATO
     @Column(name = "stato")
     private String stato;
 

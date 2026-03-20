@@ -1,9 +1,9 @@
 <section class="card">
-  <div class="card-header">
+  <div class="card-header" *ngIf="step === 'dati'">
     <h2>Accesso al servizio</h2>
   </div>
 
-  <p class="hint">Inserisci i dati iniziali e scegli il servizio.</p>
+  <p class="hint" *ngIf="step === 'dati'">Inserisci i dati iniziali e scegli il servizio.</p>
 
   <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
@@ -45,11 +45,11 @@
       </label>
       <label>
         Data
-        <input type="date" [(ngModel)]="prenotazioneData" />
+        <input type="date" [(ngModel)]="prenotazioneData" [attr.min]="prenotazioneMinDate" [attr.max]="prenotazioneMaxDate" />
       </label>
       <label>
         Ora
-        <input type="time" [(ngModel)]="prenotazioneOra" />
+        <input type="time" [(ngModel)]="prenotazioneOra" min="19:30" max="23:00" />
       </label>
       <div class="availability" *ngIf="prenotazioneOra">
         Disponibilità: <strong>{{ verificaDisponibilita() }}</strong>
@@ -174,7 +174,7 @@
   <div *ngIf="step === 'conferma'" class="conferma-section">
     <h3>Ordine inviato in cucina!</h3>
     <p>Il tuo ordine è stato ricevuto e verrà preparato a breve.</p>
-    <p class="hint">Puoi continuare ad ordinare o andare alla sezione "Il mio conto" per pagare.</p>
+    <p class="hint">Puoi continuare ad ordinare quando vuoi.</p>
     <button type="button" class="primary" (click)="ordinaAltro()">Ordina altro</button>
   </div>
 

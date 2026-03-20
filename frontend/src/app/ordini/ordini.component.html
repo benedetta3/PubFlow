@@ -1,22 +1,22 @@
 <section class="card">
   <div class="card-header">
     <h2>Ordini</h2>
-    <button type="button" (click)="loadOrdini()" [disabled]="loading">
+    <button type="button" *ngIf="accesso === 'staff'" (click)="loadOrdini()" [disabled]="loading">
       {{ loading ? 'Caricamento...' : 'Carica ordini' }}
     </button>
   </div>
 
-  <p class="hint">Recupera i dati da <code>/pubflow/ordini</code>.</p>
+  <p class="totale-serata" *ngIf="accesso === 'staff'">Totale serata: € {{ getTotaleSerata() | number : '1.2-2' }}</p>
 
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <p *ngIf="!loading && !errorMessage && ordiniFiltrati.length === 0" class="empty">
-    Nessun ordine disponibile. Premi "Carica ordini".
+    {{ accesso === 'staff' ? 'Nessun ordine disponibile.' : 'Non ci sono ordini in preparazione.' }}
   </p>
 
   <div class="order-list" *ngIf="ordiniFiltrati.length > 0">
-    <article class="order" *ngFor="let ordine of ordiniFiltrati">
+  <article class="order" *ngFor="let ordine of ordiniFiltrati" [class.paid]="isPagato(ordine)">
       <div class="order-main">
-        <div>
+        <div class="order-info">
           <h3>Ordine #{{ ordine.numeroOrdine }}</h3>
           <p class="meta">
             <span>{{ ordine.tipoOrdine }}</span>
@@ -27,7 +27,21 @@
           <p class="meta" *ngIf="ordine.numeroTavolo">Tavolo: {{ ordine.numeroTavolo }}</p>
           <p class="meta" *ngIf="ordine.indirizzoConsegna">Consegna: {{ ordine.indirizzoConsegna }}</p>
         </div>
-        <div class="total">€ {{ ordine.totale | number : '1.2-2' }}</div>
+        <div class="order-side">
+          <div class="total">€ {{ ordine.totale | number : '1.2-2' }}</div>
+          <div class="order-actions" *ngIf="isStaff()">
+            <button
+              type="button"
+              class="order-action-btn"
+              *ngFor="let step of getStepList(ordine)"
+              [class.done]="isStepCompleted(ordine, step.stato)"
+              [disabled]="!canMoveTo(ordine, step.stato) || isUpdating(ordine.id)"
+              (click)="aggiornaStato(ordine, step.stato)"
+            >
+              {{ step.label }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <ul class="items" *ngIf="ordine.items?.length">

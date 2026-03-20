@@ -16,8 +16,17 @@ export class MenuService {
     return this.http.get<MenuItem[]>(this.baseUrl);
   }
 
+  create(item: MenuItem): Observable<MenuItem> {
+    return this.http.post<MenuItem>(this.baseUrl, item);
+  }
+
   update(id: number | undefined, item: MenuItem): Observable<MenuItem> {
     if (!id) throw new Error('Cannot update item without id');
     return this.http.put<MenuItem>(`${this.baseUrl}/${id}`, item);
+  }
+
+  delete(id: number | undefined): Observable<void> {
+    if (!id) throw new Error('Cannot delete item without id');
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

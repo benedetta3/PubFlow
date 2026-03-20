@@ -31,4 +31,7 @@ public class MenuItemEntity {
 
     @Column(name = "quantita_disponibile")
     private Integer quantitaDisponibile;
+
+    @Column(name = "custom")
+    private Boolean custom;
 }

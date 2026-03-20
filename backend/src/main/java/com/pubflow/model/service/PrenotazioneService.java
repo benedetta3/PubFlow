@@ -24,8 +24,8 @@ public class PrenotazioneService {
 
     // Recupera tutte le prenotazioni
     public List<Prenotazione> getAll() {
-        return prenotazioneRepository.findAll()
-                .stream().map(prenotazioneMapper::toDto).toList();
+    return prenotazioneRepository.findAllByOrderByDataAscOraAsc()
+        .stream().map(prenotazioneMapper::toDto).toList();
     }
 
     // Recupera una prenotazione per id

@@ -53,14 +53,20 @@ public class MenuItemService {
     // Salva un nuovo prodotto
     public MenuItem save(MenuItem menuItem) {
         MenuItemEntity entity = menuItemMapper.toEntity(menuItem);
+        entity.setCustom(true);
         normalizeDisponibilita(entity);
         return menuItemMapper.toDto(menuItemRepository.save(entity));
     }
 
     // Aggiorna un prodotto esistente
     public MenuItem update(Long id, MenuItem menuItem) {
+        MenuItemEntity existing = menuItemRepository.findById(id).orElse(null);
+        if (existing == null) {
+            return null;
+        }
         MenuItemEntity entity = menuItemMapper.toEntity(menuItem);
         entity.setId(id);
+        entity.setCustom(existing.getCustom());
         normalizeDisponibilita(entity);
         return menuItemMapper.toDto(menuItemRepository.save(entity));
     }

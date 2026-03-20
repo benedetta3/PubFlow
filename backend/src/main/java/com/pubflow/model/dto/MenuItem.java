@@ -29,4 +29,6 @@ public class MenuItem {
     @NotNull
     @Min(0)
     private Integer quantitaDisponibile;
+
+    private Boolean custom;
 }

@@ -76,11 +76,14 @@ public class MenuItemController {
 
     // DELETE /pubflow/menu/{id}  -> elimina prodotto
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         MenuItem existing = menuItemService.getById(id);
         if (existing == null) {
             throw new NotFoundException("MenuItem con id " + id);
+        }
+        if (existing.getCustom() == null || !existing.getCustom()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         menuItemService.delete(id);
         return ResponseEntity.noContent().build();
