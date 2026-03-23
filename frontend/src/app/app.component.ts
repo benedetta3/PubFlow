@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   clienteCognome = '';
   clienteTipo: TipoServizio = '';
   clienteNumeroTavolo: number | null = null;
+  clienteCodiceSegreto = '';
   clientePrenotazionePersone: number | null = null;
   clientePrenotazioneData = '';
   clientePrenotazioneOra = '';
@@ -70,6 +71,7 @@ export class AppComponent implements OnInit {
     this.clienteCognome = '';
     this.clienteTipo = '';
     this.clienteNumeroTavolo = null;
+    this.clienteCodiceSegreto = '';
     this.clientePrenotazionePersone = null;
     this.clientePrenotazioneData = '';
     this.clientePrenotazioneOra = '';
@@ -106,8 +108,8 @@ export class AppComponent implements OnInit {
       this.erroreLogin = 'Compila Nome, Cognome e Tipo Servizio.';
       return;
     }
-    if (this.clienteTipo === 'TAVOLO' && !this.clienteNumeroTavolo) {
-      this.erroreLogin = 'Inserisci il Numero del Tavolo.';
+    if (this.clienteTipo === 'TAVOLO' && !this.clienteCodiceSegreto.trim()) {
+      this.erroreLogin = 'Inserisci il Codice Segreto del Tavolo fornito dallo staff.';
       return;
     }
     if (
@@ -125,8 +127,8 @@ export class AppComponent implements OnInit {
       return;
     }
     if (this.clienteTipo === 'PRENOTAZIONE') {
-      if (!this.isDataAnnoCorrente(this.clientePrenotazioneData)) {
-        this.erroreLogin = "La prenotazione è disponibile solo per l'anno corrente.";
+      if (!this.isDataEntroTreMesi(this.clientePrenotazioneData)) {
+        this.erroreLogin = "La prenotazione può essere fatta al massimo con 3 mesi di anticipo.";
         return;
       }
       if (!this.isDataNonPassata(this.clientePrenotazioneData)) {
@@ -175,41 +177,33 @@ export class AppComponent implements OnInit {
       }
     }
 
-    this.impostaDatiCliente();
-
     if (this.clienteTipo === 'TAVOLO') {
-      const numeroTavolo = Number(this.clienteNumeroTavolo);
-      if (!numeroTavolo || Number.isNaN(numeroTavolo)) {
-        this.erroreLogin = 'Inserisci un numero tavolo valido.';
+      const codice = this.clienteCodiceSegreto.trim();
+      if (codice.length !== 4) {
+        this.erroreLogin = 'Il Codice Segreto deve contenere 4 caratteri.';
         return;
       }
 
-      this.tavoliService.getByNumero(numeroTavolo).subscribe({
+      this.tavoliService.loginCliente(codice).subscribe({
         next: (tavolo) => {
-          if (tavolo.stato !== 'LIBERO') {
-            this.erroreLogin = 'Tavolo già occupato.';
-            return;
-          }
-          // Segna il tavolo come OCCUPATO e vai direttamente al menu
-          this.tavoliService.aggiornaStato(numeroTavolo, 'OCCUPATO').subscribe({
-            next: () => {
-              this.step = 'servizi';
-              this.startOrdiniPolling();
-              this.saveSession();
-              this.saveRecoveryData();
-            },
-            error: (err) => {
-              console.error('Errore aggiornamento tavolo', err);
-              this.erroreLogin = 'Impossibile aggiornare lo stato del tavolo.';
-            }
-          });
+          this.clienteNumeroTavolo = tavolo.numero;
+          this.impostaDatiCliente();
+          this.step = 'servizi';
+          this.startOrdiniPolling();
+          this.saveSession();
+          this.saveRecoveryData();
         },
         error: (err) => {
-          console.error('Errore richiesta tavolo', err);
-          this.erroreLogin = 'Tavolo non trovato.';
+          console.error('Errore login tavolo', err);
+          if (err.status === 401) {
+             this.erroreLogin = 'Codice segreto errato o tavolo già occupato/non disponibile.';
+          } else {
+             this.erroreLogin = 'Tavolo non trovato o errore di connessione.';
+          }
         }
       });
     } else {
+      this.impostaDatiCliente();
       this.step = 'servizi';
       this.startOrdiniPolling();
       this.saveSession();
@@ -222,7 +216,8 @@ export class AppComponent implements OnInit {
       nome: this.clienteNome.trim(),
       cognome: this.clienteCognome.trim(),
       telefono: this.clienteTelefono.trim() || undefined,
-      numeroTavolo: this.clienteNumeroTavolo
+      numeroTavolo: this.clienteNumeroTavolo,
+      loginTime: new Date().toISOString()
     };
     this.clienteLoginData = {
       nome: this.clienteNome.trim(),
@@ -241,21 +236,33 @@ export class AppComponent implements OnInit {
   }
 
   get prenotazioneMinDate(): string {
-    const year = new Date().getFullYear();
-    return `${year}-01-01`;
+    const today = new Date();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${today.getFullYear()}-${mm}-${dd}`;
   }
 
   get prenotazioneMaxDate(): string {
-    const year = new Date().getFullYear();
-    return `${year}-12-31`;
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 3);
+    const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(maxDate.getDate()).padStart(2, '0');
+    return `${maxDate.getFullYear()}-${mm}-${dd}`;
   }
 
-  private isDataAnnoCorrente(data: string): boolean {
+  private isDataEntroTreMesi(data: string): boolean {
     if (!data) {
       return false;
     }
-    const year = Number(data.split('-')[0]);
-    return year === new Date().getFullYear();
+    const [year, month, day] = data.split('-').map(Number);
+    const inputDate = new Date(year, month - 1, day);
+    
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 3);
+    inputDate.setHours(0, 0, 0, 0);
+    maxDate.setHours(0, 0, 0, 0);
+    
+    return inputDate.getTime() <= maxDate.getTime();
   }
 
   private isDataNonPassata(data: string): boolean {
@@ -433,11 +440,23 @@ export class AppComponent implements OnInit {
 
   private filterClientOrders(ordini: Ordine[], cliente: ClienteInfo): Ordine[] {
     const telefono = cliente.telefono?.trim();
+    const loginTime = cliente.loginTime ? new Date(cliente.loginTime).getTime() : 0;
+
+    let ordiniValidi = ordini;
+    if (loginTime > 0) {
+      // Tolleranza di 5 secondi per coprire ordini appena successivi al login
+      const soglia = loginTime - 5000;
+      ordiniValidi = ordiniValidi.filter((o) => {
+        if (!o.dataOra) return true;
+        return new Date(o.dataOra).getTime() >= soglia;
+      });
+    }
+
     if (telefono) {
-      return ordini.filter((o) => (o.telefonoCliente ?? '').includes(telefono));
+      return ordiniValidi.filter((o) => (o.telefonoCliente ?? '').includes(telefono));
     }
     if (cliente.numeroTavolo) {
-      return ordini.filter((o) => o.numeroTavolo === cliente.numeroTavolo);
+      return ordiniValidi.filter((o) => o.numeroTavolo === cliente.numeroTavolo);
     }
     return [];
   }

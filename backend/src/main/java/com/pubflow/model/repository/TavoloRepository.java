@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface TavoloRepository extends JpaRepository<TavoloEntity, Long> {
     Optional<TavoloEntity> findByNumero(Integer numero);
+    Optional<TavoloEntity> findByCodiceSegreto(String codiceSegreto);
     List<TavoloEntity> findByStato(String stato);
 
     @Transactional

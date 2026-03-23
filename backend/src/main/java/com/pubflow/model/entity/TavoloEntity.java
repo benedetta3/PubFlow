@@ -25,4 +25,7 @@ public class TavoloEntity {
     @Column(nullable = false)
     private String stato; // LIBERO, IN_ATTESA_CONFERMA, OCCUPATO
 
+    @Column(name = "codice_segreto", unique = true)
+    private String codiceSegreto;
+
 }

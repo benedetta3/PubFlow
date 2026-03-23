@@ -14,22 +14,22 @@
   </p>
 
   <div class="order-list" *ngIf="ordiniFiltrati.length > 0">
-  <article class="order" *ngFor="let ordine of ordiniFiltrati" [class.paid]="isPagato(ordine)">
+  <article class="order" *ngFor="let ordine of ordiniFiltrati; let i = index" [class.paid]="isTerminato(ordine)">
       <div class="order-main">
         <div class="order-info">
-          <h3>Ordine #{{ ordine.numeroOrdine }}</h3>
-          <p class="meta">
-            <span>{{ ordine.tipoOrdine }}</span>
-            <span>•</span>
-            <span>{{ ordine.stato }}</span>
+          <div class="order-header-info">
+            <h3 class="numero-ordine">Ordine #{{ ordine.numeroOrdine || i+1 }}</h3>
+            <span class="stato-badge" [class]="ordine.stato?.toLowerCase()">{{ formatStato(ordine.stato) }}</span>
+          </div>
+          <p class="meta" *ngIf="ordine.nomeCliente || ordine.telefonoCliente">
+            Cliente: {{ ordine.nomeCliente || 'Sconosciuto' }} {{ ordine.telefonoCliente ? '- ' + ordine.telefonoCliente : '' }}
           </p>
-          <p class="meta" *ngIf="ordine.telefonoCliente">Cliente: {{ ordine.telefonoCliente }}</p>
           <p class="meta" *ngIf="ordine.numeroTavolo">Tavolo: {{ ordine.numeroTavolo }}</p>
           <p class="meta" *ngIf="ordine.indirizzoConsegna">Consegna: {{ ordine.indirizzoConsegna }}</p>
         </div>
         <div class="order-side">
           <div class="total">€ {{ ordine.totale | number : '1.2-2' }}</div>
-          <div class="order-actions" *ngIf="isStaff()">
+          <div class="order-actions" *ngIf="isStaff() && !isTerminato(ordine)">
             <button
               type="button"
               class="order-action-btn"
@@ -45,9 +45,14 @@
       </div>
 
       <ul class="items" *ngIf="ordine.items?.length">
-        <li *ngFor="let item of ordine.items">
-          <span>{{ item.menuItemNome || 'Voce menu #' + item.menuItemId }}</span>
-          <span>x{{ item.quantita }}</span>
+        <li *ngFor="let item of ordine.items" style="display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; width: 100%;">
+            <span>{{ item.menuItemNome || 'Voce menu #' + item.menuItemId }}</span>
+            <span>x{{ item.quantita }}</span>
+          </div>
+          <div *ngIf="item.note" style="font-size: 0.8rem; color: var(--gray-600); font-style: italic; margin-top: 2px;">
+            {{ item.note }}
+          </div>
         </li>
       </ul>
     </article>

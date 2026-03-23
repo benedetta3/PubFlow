@@ -26,6 +26,7 @@ export interface ClienteInfo {
   cognome: string;
   telefono?: string;
   numeroTavolo?: number | null;
+  loginTime?: string;
 }
 
 export interface ClienteLoginData {
@@ -394,6 +395,7 @@ export class ServizioComponent implements OnChanges {
 
     const payload = {
       tipoOrdine: this.tipo,
+      nomeCliente: `${this.nome} ${this.cognome}`.trim(),
       telefonoCliente: this.telefono.trim() || undefined,
       numeroTavolo: this.numeroTavolo ?? undefined,
       indirizzoConsegna: this.indirizzo.trim() || undefined,

@@ -24,6 +24,7 @@
       [style.grid-area]="'t' + t.numero"
     >
       <span class="t-num">{{ t.numero }}</span>
+      <span class="t-code" *ngIf="t.codiceSegreto" style="font-size: 0.75rem; background: rgba(0,0,0,0.6); border-radius: 4px; padding: 2px 4px; margin-top: 4px; color: #ffaa00; font-family: monospace;">{{ t.codiceSegreto }}</span>
     </div>
   </div>
 </section>

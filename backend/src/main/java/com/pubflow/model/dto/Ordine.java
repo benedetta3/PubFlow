@@ -13,6 +13,7 @@ public class Ordine {
     private Long id;
     private Integer numeroOrdine;
     private LocalDateTime dataOra;
+    private String nomeCliente;
 
     @NotNull
     private String tipoOrdine;   // TAVOLO, ASPORTO, DOMICILIO

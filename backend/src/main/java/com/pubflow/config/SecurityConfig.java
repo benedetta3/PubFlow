@@ -29,12 +29,13 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/pubflow/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/pubflow/prenotazioni").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/pubflow/tavoli/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/pubflow/prenotazioni", "/pubflow/ordini", "/pubflow/tavoli/login").permitAll()
                         .requestMatchers("/pubflow/auth/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(customizer -> {});
+                .httpBasic(basic -> basic.authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+                }));
 
         return http.build();
     }

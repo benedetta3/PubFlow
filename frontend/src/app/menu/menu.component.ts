@@ -228,8 +228,9 @@ export class MenuComponent {
         this.items = this.items.filter((i) => i.id !== item.id);
         this.pendingUpdates.delete(item.id as number);
       },
-      error: () => {
-        this.errorMessage = 'Errore durante l\'eliminazione del prodotto.';
+      error: (err) => {
+        console.error("Errore delete:", err);
+        this.errorMessage = 'Errore: ' + (err.error?.message || err.message || 'Errore sconosciuto durante l\'eliminazione');
       }
     });
   }

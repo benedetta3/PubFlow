@@ -26,7 +26,9 @@ public class MenuItemService {
     // Recupera tutti i prodotti del menu
     public List<MenuItem> getAll() {
         return menuItemRepository.findAll()
-                .stream().map(menuItemMapper::toDto).toList();
+                .stream()
+                .filter(item -> item.getQuantitaDisponibile() == null || item.getQuantitaDisponibile() >= 0)
+                .map(menuItemMapper::toDto).toList();
     }
 
     // Recupera solo i prodotti disponibili
@@ -40,7 +42,9 @@ public class MenuItemService {
     public List<MenuItem> getByCategoria(String categoria) {
         log.info("Ricerca prodotti per categoria: {}", categoria);
         return menuItemRepository.findByCategoria(categoria)
-                .stream().map(menuItemMapper::toDto).toList();
+                .stream()
+                .filter(item -> item.getQuantitaDisponibile() == null || item.getQuantitaDisponibile() >= 0)
+                .map(menuItemMapper::toDto).toList();
     }
 
     // Recupera un prodotto per id
@@ -71,9 +75,20 @@ public class MenuItemService {
         return menuItemMapper.toDto(menuItemRepository.save(entity));
     }
 
-    // Elimina un prodotto
     public void delete(Long id) {
-        menuItemRepository.deleteById(id);
+        try {
+            menuItemRepository.deleteById(id);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            log.warn("Menu item {} is referenced by orders - performing soft delete.", id);
+            MenuItemEntity existing = menuItemRepository.findById(id).orElse(null);
+            if (existing != null) {
+                existing.setDisponibile(false);
+                existing.setQuantitaDisponibile(-1);
+                menuItemRepository.save(existing);
+            } else {
+                throw e;
+            }
+        }
     }
 
     // Recupera i prodotti con paginazione e ordinamento

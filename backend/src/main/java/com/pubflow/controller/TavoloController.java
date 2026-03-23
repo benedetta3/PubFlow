@@ -51,4 +51,15 @@ public class TavoloController {
         }
         return ResponseEntity.ok(true);
     }
+
+    // POST /pubflow/tavoli/login  -> accesso cliente con codice segreto
+    @PostMapping("/login")
+    public ResponseEntity<?> loginCliente(@RequestParam String codice) {
+        try {
+            Tavolo tavolo = tavoloService.loginByCodice(codice);
+            return ResponseEntity.ok(tavolo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
+    }
 }

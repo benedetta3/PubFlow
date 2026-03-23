@@ -1,6 +1,7 @@
 package com.pubflow.model.service;
 
 import com.pubflow.model.dto.Tavolo;
+import com.pubflow.model.entity.TavoloEntity;
 import com.pubflow.model.mapper.TavoloMapper;
 import com.pubflow.model.repository.TavoloRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +35,19 @@ public class TavoloService {
         log.info("Aggiornamento stato tavolo {} a {}", numeroTavolo, nuovoStato);
         int updated = tavoloRepository.updateStato(numeroTavolo, nuovoStato);
         return updated > 0;
+    }
+
+    public Tavolo loginByCodice(String codice) {
+        TavoloEntity tavolo = tavoloRepository.findByCodiceSegreto(codice)
+                .orElseThrow(() -> new IllegalArgumentException("Codice segreto non valido"));
+        
+        if ("OCCUPATO".equalsIgnoreCase(tavolo.getStato())) {
+            throw new IllegalArgumentException("Il tavolo è già occupato da un altro cliente");
+        }
+        
+        tavolo.setStato("OCCUPATO");
+        tavoloRepository.save(tavolo);
+        log.info("Accesso cliente tramite codice segreto riuscito per tavolo: {}", tavolo.getNumero());
+        return tavoloMapper.toDto(tavolo);
     }
 }

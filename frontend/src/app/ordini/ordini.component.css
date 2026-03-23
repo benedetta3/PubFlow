@@ -85,18 +85,21 @@
 .order {
   border-radius: var(--radius-sm);
   padding: 1rem;
-  background: var(--gray-100);
-  transition: background 0.2s;
+  background: var(--yellow-light);
+  border: 2px solid var(--yellow);
+  transition: all 0.2s;
 }
 
 .order.paid {
-  border: 2px dashed var(--gray-400);
-  background: #fdf7d8;
+  border: 2px solid var(--gray-300);
+  background: var(--gray-100);
   opacity: 0.85;
+  filter: none;
 }
 
 .order:hover {
-  background: var(--yellow-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .order-main {

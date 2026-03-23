@@ -5,6 +5,7 @@ export interface Ordine {
   numeroOrdine: number;
   dataOra?: string;
   tipoOrdine: string;
+  nomeCliente?: string;
   stato: string;
   totale: number;
   telefonoCliente?: string;

@@ -54,12 +54,16 @@ export class OrdiniComponent implements OnInit, OnDestroy {
 
   getTotaleSerata(): number {
     return this.ordini
-      .filter((ordine) => ordine.stato === 'PAGATO')
+      .filter((ordine) => ordine.stato === 'PAGATO' || ordine.tipoOrdine === 'ASPORTO' || ordine.tipoOrdine === 'DOMICILIO')
       .reduce((acc, ordine) => acc + (Number(ordine.totale) || 0), 0);
   }
 
-  isPagato(ordine: Ordine): boolean {
-    return ordine.stato === 'CONSEGNATO';
+  isTerminato(ordine: Ordine): boolean {
+    return ordine.stato === 'CONSEGNATO' || ordine.stato === 'PAGATO';
+  }
+
+  formatStato(stato?: string): string {
+    return stato ? stato.replace(/_/g, ' ') : '';
   }
 
   getStepList(ordine: Ordine): Array<{ stato: string; label: string }> {

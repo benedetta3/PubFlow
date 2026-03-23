@@ -7,6 +7,7 @@ export interface Tavolo {
   numero: number;
   capienza: number;
   stato: 'LIBERO' | 'IN_ATTESA_CONFERMA' | 'OCCUPATO';
+  codiceSegreto?: string;
 }
 
 @Injectable({
@@ -31,5 +32,9 @@ export class TavoliService {
 
   aggiornaStato(numero: number, stato: string): Observable<boolean> {
     return this.http.patch<boolean>(`${this.baseUrl}/${numero}/stato?stato=${stato}`, {});
+  }
+
+  loginCliente(codice: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/login?codice=${codice}`, {});
   }
 }

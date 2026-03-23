@@ -69,11 +69,16 @@ public class OrdineService {
     public Ordine save(Ordine ordine) {
         OrdineEntity entity = new OrdineEntity();
         entity.setDataOra(LocalDateTime.now());
+        entity.setNomeCliente(ordine.getNomeCliente());
         entity.setTipoOrdine(ordine.getTipoOrdine());
         entity.setStato("RICEVUTO");
         entity.setTelefonoCliente(ordine.getTelefonoCliente());
         entity.setNumeroTavolo(ordine.getNumeroTavolo());
         entity.setIndirizzoConsegna(ordine.getIndirizzoConsegna());
+
+        if ("TAVOLO".equalsIgnoreCase(ordine.getTipoOrdine()) && ordine.getNumeroTavolo() != null) {
+            tavoloService.aggiornaStato(ordine.getNumeroTavolo(), "OCCUPATO");
+        }
 
         // Costruisce gli OrdineItem e calcola il totale
         List<OrdineItemEntity> items = new ArrayList<>();
@@ -83,6 +88,17 @@ public class OrdineService {
             MenuItemEntity menuItem = menuItemRepository.findById(itemDto.getMenuItemId())
                     .orElseThrow(() -> new IllegalArgumentException(
                             "MenuItem non trovato con id: " + itemDto.getMenuItemId()));
+
+            // Controlla disponibilità e inventario
+            if (!menuItem.isDisponibile()) {
+                throw new IllegalArgumentException("Il prodotto " + menuItem.getNome() + " non è attualmente disponibile.");
+            }
+            if (menuItem.getQuantitaDisponibile() != null) {
+                if (itemDto.getQuantita() > menuItem.getQuantitaDisponibile()) {
+                    throw new IllegalArgumentException("Quantità insufficiente in magazzino per " + menuItem.getNome() + ". Rimanenti: " + menuItem.getQuantitaDisponibile());
+                }
+                menuItem.setQuantitaDisponibile(menuItem.getQuantitaDisponibile() - itemDto.getQuantita());
+            }
 
             OrdineItemEntity itemEntity = new OrdineItemEntity();
             itemEntity.setOrdine(entity);

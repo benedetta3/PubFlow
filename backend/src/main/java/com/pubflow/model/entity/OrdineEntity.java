@@ -22,6 +22,9 @@ public class OrdineEntity {
     @Column(name = "data_ora")
     private LocalDateTime dataOra;
 
+    @Column(name = "nome_cliente")
+    private String nomeCliente;
+
     // Tipo: TAVOLO, ASPORTO, DOMICILIO
     @Column(name = "tipo_ordine")
     private String tipoOrdine;

@@ -21,6 +21,7 @@ public class PrenotazioneService {
 
     private final PrenotazioneMapper prenotazioneMapper;
     private final PrenotazioneRepository prenotazioneRepository;
+    private final com.pubflow.model.repository.TavoloRepository tavoloRepository;
 
     // Recupera tutte le prenotazioni
     public List<Prenotazione> getAll() {
@@ -61,20 +62,19 @@ public class PrenotazioneService {
     public Prenotazione save(Prenotazione prenotazione) {
         // Verifica Capienza Tavoli per data e ora
         List<PrenotazioneEntity> occupateData = prenotazioneRepository.findByData(prenotazione.getData());
-        List<PrenotazioneEntity> occupateOra = occupateData.stream()
-                .filter(p -> p.getOra().equals(prenotazione.getOra()) && 
-                            ("CONFERMATA".equals(p.getStato()) || "RICEVUTA".equals(p.getStato())))
+        List<PrenotazioneEntity> occupateValide = occupateData.stream()
+                .filter(p -> "CONFERMATA".equals(p.getStato()) || "RICEVUTA".equals(p.getStato()))
                 .toList();
         
         List<Integer> groups = new java.util.ArrayList<>();
-        for (PrenotazioneEntity p : occupateOra) {
+        for (PrenotazioneEntity p : occupateValide) {
             groups.add(p.getNumeroPersone());
         }
         // Aggiungiamo il nuovo gruppo alla lista per vedere se ci stanno tutti
         groups.add(prenotazione.getNumeroPersone());
 
         if (!canSatisfyAll(groups)) {
-            throw new IllegalArgumentException("Nessun tavolo disponibile per " + prenotazione.getNumeroPersone() + " persone. Locale pieno o combinazione tavoli insufficiente per l'ora richiesta.");
+            throw new IllegalArgumentException("Nessun tavolo disponibile per " + prenotazione.getNumeroPersone() + " persone. Locale pieno o combinazione tavoli insufficiente per la giornata.");
         }
 
         PrenotazioneEntity entity = prenotazioneMapper.toEntity(prenotazione);
@@ -90,7 +90,9 @@ public class PrenotazioneService {
 
     private boolean canSatisfyAll(List<Integer> groups) {
         groups.sort(java.util.Collections.reverseOrder());
-        List<Integer> availableTables = new java.util.ArrayList<>(java.util.Arrays.asList(10, 10, 6, 6, 6, 4, 4, 4, 4));
+        List<Integer> availableTables = tavoloRepository.findAll().stream()
+                .map(t -> t.getCapienza())
+                .collect(java.util.stream.Collectors.toList());
         return assignBacktrack(groups, 0, availableTables);
     }
 

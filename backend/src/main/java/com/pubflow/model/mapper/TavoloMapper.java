@@ -17,6 +17,7 @@ public class TavoloMapper {
                 .numero(entity.getNumero())
                 .capienza(entity.getCapienza())
                 .stato(entity.getStato())
+                .codiceSegreto(entity.getCodiceSegreto())
                 .build();
     }
     
@@ -27,6 +28,7 @@ public class TavoloMapper {
                 .numero(dto.getNumero())
                 .capienza(dto.getCapienza())
                 .stato(dto.getStato())
+                .codiceSegreto(dto.getCodiceSegreto())
                 .build();
     }
     

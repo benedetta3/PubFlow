@@ -63,9 +63,13 @@ public class OrdineController {
 
     // POST /pubflow/ordini  -> crea nuovo ordine
     @PostMapping
-    public ResponseEntity<Ordine> create(@jakarta.validation.Valid @RequestBody Ordine ordine) {
-        Ordine created = ordineService.save(ordine);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<?> create(@jakarta.validation.Valid @RequestBody Ordine ordine) {
+        try {
+            Ordine created = ordineService.save(ordine);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
     }
 
     // PATCH /pubflow/ordini/{id}/stato  -> aggiorna stato ordine

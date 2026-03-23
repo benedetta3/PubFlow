@@ -26,6 +26,7 @@ public class OrdineMapper {
         dto.setId(entity.getId());
         dto.setNumeroOrdine(entity.getNumeroOrdine());
         dto.setDataOra(entity.getDataOra());
+        dto.setNomeCliente(entity.getNomeCliente());
         dto.setTipoOrdine(entity.getTipoOrdine());
         dto.setStato(entity.getStato());
         dto.setTotale(entity.getTotale());
@@ -50,6 +51,7 @@ public class OrdineMapper {
         entity.setId(dto.getId());
         entity.setNumeroOrdine(dto.getNumeroOrdine());
         entity.setDataOra(dto.getDataOra());
+        entity.setNomeCliente(dto.getNomeCliente());
         entity.setTipoOrdine(dto.getTipoOrdine());
         entity.setStato(dto.getStato());
         entity.setTotale(dto.getTotale());

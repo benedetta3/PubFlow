@@ -14,4 +14,5 @@ public class Tavolo {
     private Integer numero;
     private Integer capienza;
     private String stato;
+    private String codiceSegreto;
 }

@@ -1,0 +1,87 @@
+{
+  "info": {
+    "_postman_id": "cd0b9576-5fae-4a6c-9a4f-c7fc0bcbd251",
+    "name": "PubFlow API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Ordini",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/pubflow/ordini",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["pubflow", "ordini"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Ordine",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"numeroTavolo\": 5,\n  \"nomeCliente\": \"Mario Rossi\",\n  \"tipoOrdine\": \"TAVOLO\",\n  \"totale\": 25.50,\n  \"items\": [{\n    \"menuItemId\": 1,\n    \"quantita\": 2,\n    \"note\": \"Senza ghiaccio\"\n  }]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/pubflow/ordini",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["pubflow", "ordini"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Prenotazioni",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/pubflow/prenotazioni",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["pubflow", "prenotazioni"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Prenotazione",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nomeCliente\": \"Luigi Bianchi\",\n  \"telefonoCliente\": \"3331234567\",\n  \"numeroPersone\": 4,\n  \"data\": \"2026-05-10\",\n  \"ora\": \"20:30\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/pubflow/prenotazioni",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["pubflow", "prenotazioni"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
