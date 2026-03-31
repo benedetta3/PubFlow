@@ -21,9 +21,47 @@ public class DataSeeder {
             MenuItemRepository menuItemRepository,
             TavoloRepository tavoloRepository,
             OrdineRepository ordineRepository,
-            PrenotazioneRepository prenotazioneRepository
+            PrenotazioneRepository prenotazioneRepository,
+            com.pubflow.model.repository.UtenteRepository utenteRepository,
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder
     ) {
         return args -> {
+            if (utenteRepository.findByUsername("betcal").isEmpty()) {
+                utenteRepository.save(com.pubflow.model.entity.UtenteEntity.builder()
+                        .nome("Benedetta")
+                        .cognome("Calonico")
+                        .username("betcal")
+                        .password(passwordEncoder.encode("pub3"))
+                        .passwordVisibile("pub3")
+                        .ruolo("ROLE_ADMIN")
+                        .build());
+            }
+
+            // Aggiungi staff predefinito se non esistono (Mario Rossi, Cristina Antonucci, Emanuele Bianchi)
+            String[][] defaultStaff = {
+                    {"Mario", "Rossi", "marros"},
+                    {"Cristina", "Antonucci", "crisant"},
+                    {"Emanuele", "Bianchi", "emabian"}
+            };
+            java.util.Random rand = new java.util.Random();
+            for (String[] staffData : defaultStaff) {
+                if (utenteRepository.findByUsername(staffData[2]).isEmpty()) {
+                    // Genera password 4 lettere 1 numero
+                    StringBuilder sb = new StringBuilder();
+                    for (int i=0; i<4; i++) sb.append((char) (rand.nextInt(26) + 'a'));
+                    sb.append(rand.nextInt(10));
+                    String pwd = sb.toString();
+
+                    utenteRepository.save(com.pubflow.model.entity.UtenteEntity.builder()
+                            .nome(staffData[0])
+                            .cognome(staffData[1])
+                            .username(staffData[2])
+                            .password(passwordEncoder.encode(pwd))
+                            .passwordVisibile(pwd)
+                            .ruolo("ROLE_STAFF")
+                            .build());
+                }
+            }
             if (ordineRepository.count() > 0) {
                 ordineRepository.deleteAll();
             }

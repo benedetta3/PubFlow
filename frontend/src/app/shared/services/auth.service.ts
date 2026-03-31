@@ -32,6 +32,10 @@ export class AuthService {
     localStorage.removeItem(this.storageKey);
   }
 
+  logout(): void {
+    this.clearCredentials();
+  }
+
   getCredentials(): AuthCredentials | null {
     return this.credentials;
   }

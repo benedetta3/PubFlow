@@ -7,6 +7,7 @@ import { TavoliService } from './shared/services/tavoli.service';
 import { PrenotazioniComponent } from './prenotazioni/prenotazioni.component';
 import { OrdiniComponent } from './ordini/ordini.component';
 import { TavoliStaffComponent } from './tavoli-staff/tavoli-staff.component';
+import { AuthService } from './shared/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -50,7 +51,11 @@ export class AppComponent implements OnInit {
   private readonly sessionKey = 'pubflow_session';
   private readonly recoveryKey = 'pubflow_recovery';
 
-  constructor(private ordiniService: OrdiniService, private tavoliService: TavoliService) {}
+  constructor(
+    private ordiniService: OrdiniService, 
+    private tavoliService: TavoliService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.startOrdiniPolling();
@@ -62,6 +67,10 @@ export class AppComponent implements OnInit {
   }
 
   resetAccesso(): void {
+    if (this.accesso === 'staff') {
+      this.authService.logout();
+    }
+
     this.stopOrdiniPolling();
     this.accesso = 'cliente';
     this.clienteInfo = null;
@@ -79,7 +88,7 @@ export class AppComponent implements OnInit {
     this.clienteIndirizzo = '';
     this.clienteComune = '';
     this.clienteProvincia = '';
-    
+        
     // Reset conto state
     this.vistaAttiva = 'servizio';
     this.ordiniEffettuati = [];
@@ -93,9 +102,18 @@ export class AppComponent implements OnInit {
     this.clienteInfo = info;
   }
 
+  isProprietario: boolean = false;
+  nomeUtenteLoggato: string = 'Staff';
+
   confermaLoginStaff(loggato: boolean): void {
     this.step = loggato ? 'servizi' : 'login';
     if (loggato) {
+      const saved = localStorage.getItem('pubflow.auth');
+      if (saved) {
+        const creds = JSON.parse(saved);
+        this.isProprietario = creds.username === 'betcal';
+        this.nomeUtenteLoggato = creds.username;
+      }
       this.saveSession();
       this.saveRecoveryData();
     }

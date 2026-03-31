@@ -11,6 +11,7 @@ import { AuthComponent } from './auth/auth.component';
 import { AuthInterceptor } from './shared/services/auth.interceptor';
 import { ServizioComponent } from './servizio/servizio.component';
 import { TavoliStaffComponent } from './tavoli-staff/tavoli-staff.component';
+import { GestioneStaffComponent } from './gestione-staff/gestione-staff.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TavoliStaffComponent } from './tavoli-staff/tavoli-staff.component';
     PrenotazioniComponent,
     AuthComponent,
     ServizioComponent,
-    TavoliStaffComponent
+    TavoliStaffComponent,
+    GestioneStaffComponent
   ],
   imports: [
     BrowserModule,

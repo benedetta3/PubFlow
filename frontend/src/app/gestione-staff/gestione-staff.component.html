@@ -1,0 +1,52 @@
+<div class="staff-container">
+  <div class="header">
+    <h2>Gestione Staff</h2>
+    <p>Visualizza, assumi e licenzia i membri dello staff operativo. Le password vengono generate automaticamente.</p>
+  </div>
+
+  <div *ngIf="errore" class="error-msg">
+    {{ errore }}
+  </div>
+
+  <div class="assunzione-card" *ngIf="!errore">
+    <h3>Nuova Assunzione</h3>
+    <div class="form-row">
+      <input type="text" placeholder="Nome" [(ngModel)]="nuovoNome" class="form-input" />
+      <input type="text" placeholder="Cognome" [(ngModel)]="nuovoCognome" class="form-input" />
+      <button class="assumi-btn" (click)="assumi()" [disabled]="loading">
+        {{ loading ? 'Caricamento...' : 'Assumi Membro' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="staff-list" *ngIf="!errore">
+    <h3>Elenco Personale Attivo</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Cognome</th>
+          <th>Username</th>
+          <th>Password <span style="font-size: 11px; font-weight: normal;">(Visibile)</span></th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of staffList; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ s.nome }}</td>
+          <td>{{ s.cognome }}</td>
+          <td class="code-font">{{ s.username }}</td>
+          <td class="code-font">{{ s.passwordVisibile }}</td>
+          <td class="actions">
+            <button class="licenzia-btn" (click)="licenzia(s.id!)">Licenzia</button>
+          </td>
+        </tr>
+        <tr *ngIf="staffList.length === 0">
+          <td colspan="6" class="empty-list">Nessun membro dello staff trovato.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

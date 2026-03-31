@@ -1,0 +1,156 @@
+.staff-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eaeaea;
+}
+
+.header h2 {
+  color: #333; /* rimosso giallo */
+  font-size: 2rem;
+}
+
+.header p {
+  color: #666;
+}
+
+.error-msg {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #c62828;
+  margin-bottom: 1rem;
+}
+
+.assunzione-card {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.assunzione-card h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.form-input {
+  flex: 1;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  color: #333;
+}
+
+.assumi-btn {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.assumi-btn:hover {
+  background: #1b5e20;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid #ddd;
+}
+
+.staff-list h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+th {
+  background: #f5f5f5;
+  color: #555;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  border-bottom: 2px solid #ddd;
+}
+
+.code-font {
+  font-family: monospace;
+  color: #000; /* rimosso giallo */
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.licenzia-btn {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.licenzia-btn:hover {
+  background: #b71c1c;
+}
+
+.scollega-btn {
+  background: #f57c00;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.scollega-btn:hover {
+  background: #e65100;
+}
+
+.status-dot {
+  font-size: 0.8rem;
+  margin-right: 0.3rem;
+}
+.status-dot.online {
+  /* colore gestito dall'emoji o eventuale shadow */
+}
+.status-dot.offline {
+  opacity: 0.5;
+}
+
+.empty-list {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 2rem;
+}

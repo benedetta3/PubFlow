@@ -86,7 +86,7 @@
     <header class="dash-header">
       <h1 class="dash-logo">The Cave Pub</h1>
       <nav class="dash-nav">
-        <span class="dash-role">Staff</span>
+        <span class="dash-role">{{ nomeUtenteLoggato }}</span>
         <button type="button" class="dash-logout" (click)="resetAccesso()">Esci</button>
       </nav>
     </header>
@@ -116,6 +116,13 @@
         <summary>Gestione Menu</summary>
         <div class="accordion-content">
           <app-menu></app-menu>
+        </div>
+      </details>
+
+      <details class="staff-accordion" *ngIf="isProprietario">
+        <summary>Gestione Staff</summary>
+        <div class="accordion-content">
+          <app-gestione-staff></app-gestione-staff>
         </div>
       </details>
     </main>
